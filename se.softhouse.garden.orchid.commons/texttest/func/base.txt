@@ -1,0 +1,1 @@
+The base text and the embedded: {m:func.embed}
