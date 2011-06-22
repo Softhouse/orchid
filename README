@@ -6,10 +6,11 @@ se.softhouse.garden.orchid.commons
 	This contains an extension to the MessageFormat available in the JDK. It provides functionality to used named
 	arguments instead of numbered arguments.
 
-	It also contains a text loader which can load messages from a directory structure. It uses the same structure as
-	used by properties in java except that the key is the path to the file, i.e. the property key a.b.c.d maps to
-	the file a/b/c/d.txt where the suffix might differ. The filename might also contain the locale name, e.g. d_en_US.txt.
-	It is also possible to add property files in the structure, they are then interpreted and inserted in the hierarchy.
+	It also contains a text loader which can load messages from a directory structure. It uses the same structure
+	as used by properties in java except that the key is the path to the file, i.e. the property key a.b.c.d maps
+	to the file a/b/c/d.txt where the suffix might differ. The filename might also contain the locale name,
+	e.g. d_en_US.txt. It is also possible to add property files in the structure, they are then interpreted and 
+	inserted in the hierarchy.
 
 se.softhouse.garden.orchid.spring
 	This module contains utilites for Spring MVC. Currently extensions to the MessageSource beans to support the 
