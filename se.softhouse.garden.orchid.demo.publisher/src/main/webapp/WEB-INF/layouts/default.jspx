@@ -1,0 +1,28 @@
+<html xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:tiles="http://tiles.apache.org/tags-tiles"
+	xmlns:spring="http://www.springframework.org/tags" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util"
+>
+
+	<jsp:output doctype-root-element="HTML" doctype-system="about:legacy-compat" />
+	<jsp:output omit-xml-declaration="yes" />
+	<jsp:directive.page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" />
+
+	<head>
+
+		<title><spring:message code="application_name" /></title>
+
+		<spring:url value="/js/jquery-1.4.2.min.js" var="url" />
+		<script type="text/javascript" src="${url}"> <!-- FF --> </script>
+
+		<spring:url value="/js/jquery-ui-1.8.4.custom.min.js" var="url" />
+		<script type="text/javascript" src="${url}"> <!-- FF --> </script>
+		
+		<util:load-theme />
+
+	</head>
+
+	<body>
+		<tiles:insertAttribute name="header" ignore="true" />
+		<tiles:insertAttribute name="body" />
+		<tiles:insertAttribute name="footer" ignore="true" />
+	</body>
+</html>

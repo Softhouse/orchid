@@ -1,0 +1,14 @@
+<jsp:root xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+
+  <jsp:output omit-xml-declaration="yes" />
+
+	<spring:url value="/resources/js/jquery.easing.1.3.js" var="jquery_url" />
+	<spring:url value="/resources/js/jquery-1.4.2.min.js" var="jquery_mini_url" />
+	<spring:url value="/resources/js/main.js" var="main_url" /> 
+
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"><!-- required for FF3 and Opera --></script>
+	<script>if(!window.jQuery) document.write(unescape('%3Cscript src="${jquery_mini_url}"%3E%3C/script%3E'))</script>
+	<script type="text/javascript" src="${jquery_url}" ><!-- required for FF3 and Opera --></script>
+	<script type="text/javascript" src="${main_url}" ><!-- required for FF3 and Opera --></script>
+
+</jsp:root>

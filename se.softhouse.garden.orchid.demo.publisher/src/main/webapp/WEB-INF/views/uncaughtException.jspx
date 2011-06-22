@@ -1,0 +1,11 @@
+<div id="content" xmlns:spring="http://www.springframework.org/tags" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" xmlns:jsp="http://java.sun.com/JSP/Page">
+	<jsp:output omit-xml-declaration="yes" />
+
+	<spring:url value="/resources/images/error.png" var="error_image_url" />
+
+	<div class='error clearfix'>
+		<img src='${error_image_url}' />
+		<p>An error occurred, please try again</p>
+	</div>
+	
+</div>

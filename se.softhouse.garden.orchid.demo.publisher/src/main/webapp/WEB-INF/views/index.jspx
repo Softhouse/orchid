@@ -1,0 +1,27 @@
+<div class="wrapper" id="wrapper" xmlns:spring="http://www.springframework.org/tags" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" xmlns:jsp="http://java.sun.com/JSP/Page" 
+	xmlns:orchid="http://www.softhouse.se/garden/orchid" >
+
+	<jsp:output omit-xml-declaration="yes" />
+		
+	<div class="main">
+		<div class="title">
+			<h1>
+				<orchid:message code="web.main.title">
+					<orchid:arg name="name" value="Micke" />
+					<orchid:arg name="title">Mr. </orchid:arg>		
+					<orchid:arg name="message">Hello</orchid:arg>			
+				</orchid:message>
+			</h1>
+			<spring:url value="/resources/images/logo.png" var="url" />
+			<img src='${url}' />
+			<p>			
+				<orchid:message code="web.main.description" htmlEscape="false">
+					<orchid:arg name="content" value="Lalalalala" />
+				</orchid:message>
+			</p>
+		</div>
+	</div>
+
+
+</div>
