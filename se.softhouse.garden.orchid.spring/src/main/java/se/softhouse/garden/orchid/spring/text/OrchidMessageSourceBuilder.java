@@ -1,4 +1,4 @@
-package se.softhouse.garden.orchid.text;
+package se.softhouse.garden.orchid.spring.text;
 
 /**
  * 

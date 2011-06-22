@@ -7,6 +7,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import se.softhouse.garden.orchid.spring.text.OrchidDirectoryMessageSource;
+import se.softhouse.garden.orchid.spring.text.OrchidReloadableResourceBundleMessageSource;
+
 public class TestOrchidMessageSourceParent {
 
 	@Test

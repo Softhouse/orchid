@@ -1,6 +1,6 @@
 package se.softhouse.garden.orchid.text;
 
-import static se.softhouse.garden.orchid.text.OrchidMessageSource.code;
+import static se.softhouse.garden.orchid.spring.text.OrchidMessageSource.code;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -9,6 +9,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import se.softhouse.garden.orchid.spring.text.OrchidDirectoryMessageSource;
+import se.softhouse.garden.orchid.spring.text.OrchidReloadableResourceBundleMessageSource;
 import se.softhouse.garden.orchid.text.TestOrchidMessageSource.TestArguments;
 import se.softhouse.garden.orchid.text.TestOrchidMessageSource.TestMessages;
 

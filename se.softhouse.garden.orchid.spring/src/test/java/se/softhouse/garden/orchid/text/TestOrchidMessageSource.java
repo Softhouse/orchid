@@ -1,7 +1,7 @@
 package se.softhouse.garden.orchid.text;
 
 import static se.softhouse.garden.orchid.commons.text.OrchidMessage.arg;
-import static se.softhouse.garden.orchid.text.OrchidMessageSource.code;
+import static se.softhouse.garden.orchid.spring.text.OrchidMessageSource.code;
 
 import java.util.Locale;
 
@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArgumentCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageCode;
+import se.softhouse.garden.orchid.spring.text.OrchidReloadableResourceBundleMessageSource;
 
 public class TestOrchidMessageSource {
 

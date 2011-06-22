@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.text;
+package se.softhouse.garden.orchid.spring.text;
 
 import java.text.MessageFormat;
 import java.util.Locale;
