@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 	<groupId>se.softhouse.garden</groupId>
 	<artifactId>orchid.commons</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.0</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Softhouse Garden Orchid Commons</name>
 	<description>Common utilites for WCM development</description>
 	<url>https://github.com/Softhouse/orchid</url>
@@ -16,8 +21,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/Softhouse/orchid</url>
-		<connection>git://github.com/Softhouse/orchid.git</connection>
+	    <connection>scm:git:git@github.com:Softhouse/orchid.git</connection>
+	    <developerConnection>scm:git:git@github.com:Softhouse/orchid.git</developerConnection>
+	    <url>git@github.com:Softhouse/orchid.git</url>
 	</scm>
 	<developers>
 		<developer>
@@ -76,6 +82,30 @@
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
