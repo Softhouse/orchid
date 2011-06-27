@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>se.softhouse.garden.orchid</groupId>
-	<artifactId>demo.publisher</artifactId>
+	<artifactId>orchid-demo-publisher</artifactId>
 	<packaging>war</packaging>
 	<version>0.1-SNAPSHOT</version>
 	<name>Softhouse Gardeb - Orchid Publisher Demo</name>
@@ -63,7 +63,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>se.softhouse.garden</groupId>
-			<artifactId>orchid.spring</artifactId>
+			<artifactId>orchid-spring</artifactId>
 			<version>${sh.orchid.version}</version>
 		</dependency>
 		<!-- General dependencies for standard applications -->

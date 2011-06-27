@@ -7,7 +7,7 @@
 		<version>7</version>
 	</parent>
 	<groupId>se.softhouse.garden</groupId>
-	<artifactId>orchid.spring</artifactId>
+	<artifactId>orchid-spring</artifactId>
 	<packaging>jar</packaging>
 	<version>0.1-SNAPSHOT</version>
 	<name>Softhouse Garden Orchid Spring</name>
@@ -63,7 +63,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>se.softhouse.garden</groupId>
-			<artifactId>orchid.commons</artifactId>
+			<artifactId>orchid-commons</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
