@@ -306,7 +306,7 @@ public class OrchidDirectoryMessageCache<T> {
 		Matcher matcher = FILE_PATTERN.matcher(file.getName());
 		if (matcher.matches()) {
 			String code = matcher.group(1);
-			String localeCode = matcher.group(2);
+			String localeCode = matcher.group(2).toLowerCase();
 			String ext = matcher.group(3);
 
 			Locale locale = Locale.getDefault();
