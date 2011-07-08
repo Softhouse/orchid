@@ -77,7 +77,7 @@ public class TestOrchidMessageSource {
 		ms.setBasename("test");
 		ms.setUseCodeAsDefaultMessage(true);
 		Assert.assertEquals("Message with an embedded message EmbeddedMessage", ms.getMessage(code(TestMessages.EMBEDDED_0), Locale.getDefault()));
-		Assert.assertEquals("Message with an embedded message embedded.11", ms.getMessage(code(TestMessages.EMBEDDED_10), Locale.getDefault()));
+		Assert.assertEquals("Message with an embedded message {embedded.11}", ms.getMessage(code(TestMessages.EMBEDDED_10), Locale.getDefault()));
 	}
 
 	@Test

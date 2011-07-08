@@ -27,10 +27,8 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.context.support.AbstractMessageSource;
 
-import se.softhouse.garden.orchid.commons.text.OrchidDefaultMessageCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
 import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageFormatLoader;
 
 /**
@@ -47,7 +45,7 @@ public class OrchidDirectoryMessageSource extends AbstractMessageSource {
 	 * Constructor
 	 */
 	public OrchidDirectoryMessageSource() {
-		this.messageLoader = new OrchidDirectoryMessageFormatLoader();
+		this.messageLoader = new OrchidSpringDirectoryMessageFormatLoader();
 	}
 
 	/**
@@ -144,24 +142,11 @@ public class OrchidDirectoryMessageSource extends AbstractMessageSource {
 	}
 
 	protected Object[] resolveArguments(OrchidMessageArguments arg, OrchidMessageFormat resolveCode, Locale locale) {
-		Object[] result = resolveCode.createArgsArray(arg);
-		for (int i = 0; i < result.length; i++) {
-			if (result[i] instanceof OrchidMessageFormatFunction) {
-				result[i] = getMessage(((OrchidMessageFormatFunction) result[i]).getValue(), new Object[] { arg }, locale);
-			}
-		}
-		return result;
+		return resolveCode.createArgsArray(arg);
 	}
 
 	protected Object[] resolveArguments(OrchidMessageSourceBuilder arg, OrchidMessageFormat resolveCode, Locale locale) {
-		Object[] result = resolveCode.createArgsArray(arg.getArgs());
-		for (int i = 0; i < result.length; i++) {
-			if (result[i] instanceof OrchidMessageFormatFunction) {
-				OrchidMessageSourceBuilder builder = (arg).copy(new OrchidDefaultMessageCode(((OrchidMessageFormatFunction) result[i]).getFunction()));
-				result[i] = getMessage(builder, locale);
-			}
-		}
-		return result;
+		return resolveCode.createArgsArray(arg.getArgs());
 	}
 
 }

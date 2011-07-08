@@ -2,6 +2,8 @@ package se.softhouse.garden.orchid.spring.tags;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
@@ -15,10 +17,13 @@ import org.springframework.web.util.TagUtils;
 
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
+import se.softhouse.garden.orchid.spring.text.OrchidMessageFormatLinkFunction;
 
 @SuppressWarnings("serial")
 public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgAware {
 
+	private static final String LINK_FUNC = OrchidMessageFormatFunction.ORCHID_FUNC + "link";
 	private String code;
 	private OrchidMessageArguments arguments;
 	private String var;
@@ -144,6 +149,9 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 		String resolvedCode = ExpressionEvaluationUtils.evaluateString("code", this.code, this.pageContext);
 
 		if (resolvedCode != null) {
+			HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
+			HttpServletResponse response = (HttpServletResponse) this.pageContext.getResponse();
+			this.arguments.arg(LINK_FUNC, new OrchidMessageFormatLinkFunction(request, response));
 			// We have a code or default text that we need to resolve.
 			Object[] argumentsArray = new Object[] { this.arguments };
 			return messageSource.getMessage(resolvedCode, argumentsArray, getRequestContext().getLocale());

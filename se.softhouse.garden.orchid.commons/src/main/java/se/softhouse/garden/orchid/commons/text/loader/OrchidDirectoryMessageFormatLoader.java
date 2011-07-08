@@ -20,10 +20,10 @@ package se.softhouse.garden.orchid.commons.text.loader;
 
 import java.util.Locale;
 
-import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat.OrchidMessageFormatFunctionResolver;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat.OrchidMessageFormatFunctionExecutorResolver;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunctionExecutor;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatLookup;
 import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageCache.MessageFactory;
 
 /**
@@ -33,13 +33,14 @@ import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageCach
  * @author Mikael Svahn
  * 
  */
-public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLoader<OrchidMessageFormat> {
+public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLoader<OrchidMessageFormat> implements OrchidMessageFormatLookup {
 
-	private final MessageFactory<OrchidMessageFormat> messageFactory = new MessageFactory<OrchidMessageFormat>() {
+	private MessageFactory<OrchidMessageFormat> messageFactory = new MessageFactory<OrchidMessageFormat>() {
 
 		@Override
 		public OrchidMessageFormat createMessage(String message, Locale locale) {
 			OrchidMessageFormat messageFormat = new OrchidMessageFormat("", locale);
+			messageFormat.setOrchidMessageFormatLookup(OrchidDirectoryMessageFormatLoader.this);
 			messageFormat.setFunctionResolver(resolveFunction());
 			messageFormat.applyPattern(message);
 			return messageFormat;
@@ -62,6 +63,13 @@ public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLo
 	 */
 	public OrchidDirectoryMessageFormatLoader(String root) {
 		super(root);
+	}
+
+	/**
+	 * Set the MessageFactory to use when loading texts from file
+	 */
+	public void setMessageFactory(MessageFactory<OrchidMessageFormat> messageFactory) {
+		this.messageFactory = messageFactory;
 	}
 
 	/*
@@ -96,23 +104,11 @@ public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLo
 	 * 
 	 * @return The function resolver
 	 */
-	private OrchidMessageFormatFunctionResolver resolveFunction() {
-		return new OrchidMessageFormatFunctionResolver() {
+	protected OrchidMessageFormatFunctionExecutorResolver resolveFunction() {
+		return new OrchidMessageFormatFunctionExecutorResolver() {
 			@Override
-			protected Object resolveFunction(String function, String value) {
-				return new OrchidMessageFormatFunction(function, value) {
-					@Override
-					public Object execute(OrchidMessageArguments args, Locale locale) {
-						if ("m".equals(this.function)) {
-							OrchidMessageFormat message = getMessage(this.value, locale);
-							if (message != null) {
-								return message.format(args);
-							}
-							return "{" + this.value + "}";
-						}
-						return super.execute(args, locale);
-					}
-				};
+			protected Object resolveFunction(String function, String value, OrchidMessageFormatLookup lookup) {
+				return new OrchidMessageFormatFunctionExecutor(function, value, lookup);
 			}
 		};
 	}

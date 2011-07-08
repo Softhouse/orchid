@@ -45,7 +45,8 @@ public class OrchidMessageFormat extends MessageFormat {
 	private static final long serialVersionUID = -7270065959883891187L;
 
 	protected List<Object> argMap;
-	protected OrchidMessageFormatFunctionResolver functionResolver = new OrchidMessageFormatFunctionResolver();
+	protected OrchidMessageFormatLookup orchidMessageFormatLookup;
+	protected OrchidMessageFormatFunctionExecutorResolver functionResolver = new OrchidMessageFormatFunctionExecutorResolver();
 
 	/**
 	 * Constructs a MessageFormat for the default locale and without any
@@ -200,7 +201,7 @@ public class OrchidMessageFormat extends MessageFormat {
 	 * @param functionResolver
 	 *            The functionResolver to set
 	 */
-	public void setFunctionResolver(OrchidMessageFormatFunctionResolver functionResolver) {
+	public void setFunctionResolver(OrchidMessageFormatFunctionExecutorResolver functionResolver) {
 		this.functionResolver = functionResolver;
 	}
 
@@ -268,7 +269,7 @@ public class OrchidMessageFormat extends MessageFormat {
 	 * @return The object to insert as an argument
 	 */
 	protected Object resolveFunction(String function, String value) {
-		return this.functionResolver.resolveFunction(function, value);
+		return this.functionResolver.resolveFunction(function, value, this.orchidMessageFormatLookup);
 	}
 
 	/**
@@ -316,30 +317,44 @@ public class OrchidMessageFormat extends MessageFormat {
 	 */
 	private void resolveArg(OrchidMessageArguments args, Object[] argArray, int i) {
 		Object key = this.argMap.get(i);
-		if (key instanceof OrchidMessageFormatFunction) {
-			argArray[i] = ((OrchidMessageFormatFunction) key).execute(args, getLocale());
+		if (key instanceof OrchidMessageFormatFunctionExecutor) {
+			argArray[i] = ((OrchidMessageFormatFunctionExecutor) key).execute(args, getLocale());
 		} else {
 			argArray[i] = args.getArgs().get(key);
 		}
 	}
 
 	/**
+	 * Set the lookup instance to use when resolving messages within messages
+	 */
+	public void setOrchidMessageFormatLookup(OrchidMessageFormatLookup orchidMessageFormatLookup) {
+		this.orchidMessageFormatLookup = orchidMessageFormatLookup;
+	}
+
+	/**
+	 * Returns the lookup instance that is used when resolving messages within
+	 * messages
+	 */
+	public OrchidMessageFormatLookup getOrchidMessageFormatLookup() {
+		return this.orchidMessageFormatLookup;
+	}
+
+	/**
 	 * Class used to resolve functions found in the pattern
 	 */
-	public static class OrchidMessageFormatFunctionResolver {
-		protected Object resolveFunction(String function, String value) {
-			/**
-			 * Resolves the function and returns an object to insert as an
-			 * argument
-			 * 
-			 * @param function
-			 *            The function name
-			 * @param value
-			 *            The value associated with the function
-			 * 
-			 * @return The object to insert as an argument
-			 */
-			return new OrchidMessageFormatFunction(function, value);
+	public static class OrchidMessageFormatFunctionExecutorResolver {
+		/**
+		 * Resolves the function and returns an object to insert as an argument
+		 * 
+		 * @param function
+		 *            The function name
+		 * @param value
+		 *            The value associated with the function
+		 * 
+		 * @return The object to insert as an argument
+		 */
+		protected Object resolveFunction(String function, String value, OrchidMessageFormatLookup lookup) {
+			return new OrchidMessageFormatFunctionExecutor(function, value, lookup);
 		}
 	}
 }

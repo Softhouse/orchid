@@ -23,10 +23,9 @@ import java.util.Locale;
 
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import se.softhouse.garden.orchid.commons.text.OrchidDefaultMessageCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatLookup;
 
 /**
  * Extends the {@link ReloadableResourceBundleMessageSource} with functionality
@@ -35,11 +34,12 @@ import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
  * @author mis
  * 
  */
-public class OrchidReloadableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource {
+public class OrchidReloadableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements OrchidMessageFormatLookup {
 
 	@Override
 	protected MessageFormat createMessageFormat(String msg, Locale locale) {
 		OrchidMessageFormat message = new OrchidMessageFormat("", locale);
+		message.setOrchidMessageFormatLookup(this);
 		if (msg != null) {
 			message.applyPattern(msg);
 		}
@@ -79,24 +79,16 @@ public class OrchidReloadableResourceBundleMessageSource extends ReloadableResou
 	}
 
 	protected Object[] resolveArguments(OrchidMessageArguments arg, OrchidMessageFormat resolveCode, Locale locale) {
-		Object[] result = resolveCode.createArgsArray(arg);
-		for (int i = 0; i < result.length; i++) {
-			if (result[i] instanceof OrchidMessageFormatFunction) {
-				result[i] = getMessage(((OrchidMessageFormatFunction) result[i]).getValue(), new Object[] { arg }, locale);
-			}
-		}
-		return result;
+		return resolveCode.createArgsArray(arg);
 	}
 
 	protected Object[] resolveArguments(OrchidMessageSourceBuilder arg, OrchidMessageFormat resolveCode, Locale locale) {
-		Object[] result = resolveCode.createArgsArray(arg.getArgs());
-		for (int i = 0; i < result.length; i++) {
-			if (result[i] instanceof OrchidMessageFormatFunction) {
-				OrchidMessageSourceBuilder builder = (arg).copy(new OrchidDefaultMessageCode(((OrchidMessageFormatFunction) result[i]).getValue()));
-				result[i] = getMessage(builder, locale);
-			}
-		}
-		return result;
+		return resolveCode.createArgsArray(arg.getArgs());
+	}
+
+	@Override
+	public OrchidMessageFormat getMessage(String code, Locale locale) {
+		return (OrchidMessageFormat) resolveCode(code, locale);
 	}
 
 }
