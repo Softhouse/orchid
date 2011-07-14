@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.commons.text.loader;
+package se.softhouse.garden.orchid.commons.text.storage.provider;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * @author Mikael Svahn
  * 
  */
-class OrchidDirectoryMessageTree {
+class OrchidMessageStorageCacheTree {
 
 	private static final Pattern LOCALE_PATTERN = Pattern.compile("([^_]*)_?([^_]*)_?([^_]*)");
 
@@ -41,7 +41,7 @@ class OrchidDirectoryMessageTree {
 	/**
 	 * The constructor
 	 */
-	public OrchidDirectoryMessageTree() {
+	public OrchidMessageStorageCacheTree() {
 		this.root = new MessageGroupNode();
 	}
 
@@ -116,7 +116,7 @@ class OrchidDirectoryMessageTree {
 	 * A class which represents all non leaf nodes
 	 */
 	public static class MessageGroupNode extends MessageNode {
-		TreeMap<String, MessageNode> children = new TreeMap<String, OrchidDirectoryMessageTree.MessageNode>();
+		TreeMap<String, MessageNode> children = new TreeMap<String, OrchidMessageStorageCacheTree.MessageNode>();
 
 		/*
 		 * (non-Javadoc)
@@ -189,7 +189,7 @@ class OrchidDirectoryMessageTree {
 	 */
 	public static class MessageTextNode extends MessageNode {
 
-		ArrayList<MessageLocale> locales = new ArrayList<OrchidDirectoryMessageTree.MessageLocale>();
+		ArrayList<MessageLocale> locales = new ArrayList<OrchidMessageStorageCacheTree.MessageLocale>();
 
 		/*
 		 * (non-Javadoc)

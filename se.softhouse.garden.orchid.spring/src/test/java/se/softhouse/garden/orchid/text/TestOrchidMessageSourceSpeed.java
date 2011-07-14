@@ -22,7 +22,7 @@ public class TestOrchidMessageSourceSpeed {
 		ms.setBasename("test");
 		ms.setUseCodeAsDefaultMessage(true);
 		long start = System.currentTimeMillis();
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 200; i++) {
 			Assert.assertEquals("FileTest message 002 with name Micke",
 			        ms.getMessage(code(TestMessages.MSG2).arg(TestArguments.NAME, "Micke").arg(TestArguments.ID, 2), Locale.getDefault()));
 		}
@@ -39,7 +39,7 @@ public class TestOrchidMessageSourceSpeed {
 		ms.setUseCodeAsDefaultMessage(true);
 		ms.start();
 		long start = System.currentTimeMillis();
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 200; i++) {
 			Assert.assertEquals("FileTest message 002 with name Micke",
 			        ms.getMessage(code(TestMessages.MSG2).arg(TestArguments.NAME, "Micke").arg(TestArguments.ID, 2), Locale.getDefault()));
 		}

@@ -18,41 +18,30 @@
  */
 package se.softhouse.garden.orchid.spring.text;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.Locale;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.springframework.context.support.AbstractMessageSource;
-
-import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
-import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageFormatLoader;
+import se.softhouse.garden.orchid.commons.text.storage.OrchidMessageFormatStorage;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageDirectoryStorageProvider;
 
 /**
- * This is a MessageSource which uses a
- * {@link OrchidDirectoryMessageFormatLoader} to load messages.
+ * This is a MessageSource which uses a {@link OrchidMessageFormatStorage} to
+ * load messages.
  * 
  * @author Mikael Svahn
  */
-public class OrchidDirectoryMessageSource extends AbstractMessageSource {
-
-	protected OrchidDirectoryMessageFormatLoader messageLoader;
+public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 
 	/**
 	 * Constructor
 	 */
 	public OrchidDirectoryMessageSource() {
-		this.messageLoader = new OrchidSpringDirectoryMessageFormatLoader();
+		this.messageLoader = new OrchidMessageFormatStorage(new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>());
 	}
 
 	/**
 	 * Sets the path to root directory to read messages from
 	 */
 	public void setRoot(String root) {
-		this.messageLoader.setRoot(root);
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setRoot(root);
 	}
 
 	/**
@@ -60,7 +49,7 @@ public class OrchidDirectoryMessageSource extends AbstractMessageSource {
 	 * reread.
 	 */
 	public void setWatch(String watchFile) {
-		this.messageLoader.setWatchFile(watchFile);
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setWatchFile(watchFile);
 	}
 
 	/**
@@ -70,7 +59,7 @@ public class OrchidDirectoryMessageSource extends AbstractMessageSource {
 	 *            The time in seconds
 	 */
 	public void setCacheSeconds(int cacheSeconds) {
-		this.messageLoader.setCacheSeconds(cacheSeconds);
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCacheSeconds(cacheSeconds);
 	}
 
 	/**
@@ -80,73 +69,7 @@ public class OrchidDirectoryMessageSource extends AbstractMessageSource {
 	 *            The name of the {@linkplain java.nio.charset.Charset charset}.
 	 */
 	public void setCharsetName(String charsetName) {
-		this.messageLoader.setCharsetName(charsetName);
-	}
-
-	/**
-	 * Starts the watch thread that will reload the cache if the watch file/dir
-	 * is changed.
-	 */
-	@PostConstruct
-	public void start() throws IOException {
-		this.messageLoader.start();
-	}
-
-	/**
-	 * Starts the watch thread that will reload the cache if the watch file/dir
-	 * is changed.
-	 */
-	@PreDestroy
-	public void stop() {
-		this.messageLoader.stop();
-	}
-
-	@Override
-	protected MessageFormat resolveCode(String code, Locale locale) {
-		return this.messageLoader.getMessage(code, locale);
-	}
-
-	@Override
-	protected MessageFormat createMessageFormat(String msg, Locale locale) {
-		return new OrchidMessageFormat((msg != null ? msg : ""), locale);
-	}
-
-	@Override
-	protected String getMessageInternal(String code, Object[] args, Locale locale) {
-		if (args != null && args.length == 1) {
-			if (args[0] instanceof OrchidMessageArguments) {
-				OrchidMessageFormat resolveCode = (OrchidMessageFormat) resolveCode(code, locale);
-				if (resolveCode == null) {
-					return getMessageFromParent(code, args, locale);
-				}
-				return super.getMessageInternal(code, resolveArguments((OrchidMessageArguments) args[0], resolveCode, locale), locale);
-			} else if (args[0] instanceof OrchidMessageSourceBuilder) {
-				OrchidMessageFormat resolveCode = (OrchidMessageFormat) resolveCode(code, locale);
-				if (resolveCode == null) {
-					return getMessageFromParent(code, args, locale);
-				}
-				return super.getMessageInternal(code, resolveArguments((OrchidMessageSourceBuilder) args[0], resolveCode, locale), locale);
-			}
-		}
-		return super.getMessageInternal(code, args, locale);
-	}
-
-	@Override
-	protected String getMessageFromParent(String code, Object[] args, Locale locale) {
-		String message = super.getMessageFromParent(code, args, locale);
-		if (message == null && args != null && args.length == 1 && args[0] instanceof OrchidMessageSourceBuilder) {
-			OrchidMessageFormat format = new OrchidMessageFormat(((OrchidMessageSourceBuilder) args[0]).getCode().getPattern(), locale);
-			return format.format(resolveArguments((OrchidMessageSourceBuilder) args[0], format, locale));
-		}
-		return message;
-	}
-
-	protected Object[] resolveArguments(OrchidMessageArguments arg, OrchidMessageFormat resolveCode, Locale locale) {
-		return resolveCode.createArgsArray(arg);
-	}
-
-	protected Object[] resolveArguments(OrchidMessageSourceBuilder arg, OrchidMessageFormat resolveCode, Locale locale) {
-		return resolveCode.createArgsArray(arg.getArgs());
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCharsetName(charsetName);
 	}
 
 }

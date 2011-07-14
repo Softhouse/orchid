@@ -16,11 +16,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.commons.text.loader;
+package se.softhouse.garden.orchid.commons.text.storage;
 
 import java.util.Locale;
 
-import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageCache.MessageFactory;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageProvider;
 
 /**
  * A message loader that load strings from bare files in a directory structure.
@@ -28,31 +29,23 @@ import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageCach
  * @author Mikael Svahn
  * 
  */
-public class OrchidDirectoryStringMessageLoader extends OrchidDirectoryMessageLoader<String> {
-
-	private final MessageFactory<String> messageFactory = new MessageFactory<String>() {
-
-		@Override
-		public String createMessage(String message, Locale locale) {
-			return message;
-		}
-	};
+public class OrchidStringMessageStorage extends OrchidMessageStorage<String> {
 
 	/**
 	 * The constructor which creates an empty cache
 	 */
-	public OrchidDirectoryStringMessageLoader() {
+	public OrchidStringMessageStorage() {
 		super();
 	}
 
 	/**
-	 * Creates an instance and loads the content from the specified root path.
+	 * The constructor which creates an empty cache
 	 * 
-	 * @param root
-	 *            The relative path
+	 * @param provider
+	 *            The storage provider to use
 	 */
-	public OrchidDirectoryStringMessageLoader(String root) {
-		super(root);
+	public OrchidStringMessageStorage(OrchidMessageStorageProvider<String> provider) {
+		super(provider);
 	}
 
 	/*
@@ -62,8 +55,14 @@ public class OrchidDirectoryStringMessageLoader extends OrchidDirectoryMessageLo
 	 * #createMessage()
 	 */
 	@Override
-	protected MessageFactory<String> createMessage() {
-		return this.messageFactory;
+	protected MessageFactory<String> createMessageFactory() {
+		return new MessageFactory<String>() {
+
+			@Override
+			public String createMessage(String message, Locale locale) {
+				return message;
+			}
+		};
 	}
 
 }

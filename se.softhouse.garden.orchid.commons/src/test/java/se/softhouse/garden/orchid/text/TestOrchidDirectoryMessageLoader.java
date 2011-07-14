@@ -29,15 +29,18 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
-import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageFormatLoader;
-import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryStringMessageLoader;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
+import se.softhouse.garden.orchid.commons.text.storage.OrchidMessageFormatStorage;
+import se.softhouse.garden.orchid.commons.text.storage.OrchidStringMessageStorage;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageDirectoryStorageProvider;
 import se.softhouse.garden.orchid.text.TestOrchidMessageFormat.TestMessages;
 
 public class TestOrchidDirectoryMessageLoader {
 
 	@Test
 	public void testGetMessage() throws IOException {
-		OrchidDirectoryStringMessageLoader dml = new OrchidDirectoryStringMessageLoader("texttest");
+		OrchidMessageDirectoryStorageProvider<String> provider = new OrchidMessageDirectoryStorageProvider<String>("texttest");
+		OrchidStringMessageStorage dml = new OrchidStringMessageStorage(provider);
 		dml.start();
 		Assert.assertEquals("FileTest message", dml.getMessage("bundle1.msg.0"));
 		Assert.assertEquals("FileTest message", dml.getMessage("bundle1.msg.0"));
@@ -50,7 +53,8 @@ public class TestOrchidDirectoryMessageLoader {
 
 	@Test
 	public void testGetMessageGroup() throws IOException {
-		OrchidDirectoryStringMessageLoader dml = new OrchidDirectoryStringMessageLoader("texttest");
+		OrchidMessageDirectoryStorageProvider<String> provider = new OrchidMessageDirectoryStorageProvider<String>("texttest");
+		OrchidStringMessageStorage dml = new OrchidStringMessageStorage(provider);
 		dml.start();
 		Assert.assertEquals("0,1", dml.getMessage("bundle1.msg"));
 		Assert.assertEquals("0,1,2", dml.getMessage("bundle1.msg", new Locale("sv", "SE")));
@@ -61,23 +65,24 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testGetMessageCache() throws IOException {
 		Locale.setDefault(Locale.US);
-		OrchidDirectoryStringMessageLoader dml = new OrchidDirectoryStringMessageLoader("texttest");
+		OrchidMessageDirectoryStorageProvider<String> provider = new OrchidMessageDirectoryStorageProvider<String>("texttest");
+		OrchidStringMessageStorage dml = new OrchidStringMessageStorage(provider);
 		dml.start();
 		File file1 = new File("texttest/bundle1/cache/cache");
 		File file2 = new File("texttest/bundle1/cache/cache_en_us");
 		file1.delete();
 		file2.delete();
-		dml.reload(true);
+		provider.reload(true);
 		Assert.assertNull(dml.getMessage("bundle1.cache.cache"));
 		writeFileContent("This is a test", file1);
-		dml.reload(true);
+		provider.reload(true);
 		Assert.assertEquals("This is a test", dml.getMessage("bundle1.cache.cache"));
 		writeFileContent("This is a test 2", file1);
-		dml.reload(true);
+		provider.reload(true);
 		Assert.assertEquals("This is a test 2", dml.getMessage("bundle1.cache.cache"));
 		writeFileContent("This is a test 3", file2);
-		dml.setCacheSeconds(-1);
-		dml.reload(false);
+		provider.setCacheSeconds(-1);
+		provider.reload(false);
 		Assert.assertEquals("This is a test 2", dml.getMessage("bundle1.cache.cache"));
 		dml.stop();
 		dml.start();
@@ -90,8 +95,9 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testReloadThread() throws IOException, InterruptedException {
 		Locale.setDefault(Locale.US);
-		OrchidDirectoryStringMessageLoader dml = new OrchidDirectoryStringMessageLoader("texttest");
-		dml.setCacheMillis(500);
+		OrchidMessageDirectoryStorageProvider<String> provider = new OrchidMessageDirectoryStorageProvider<String>("texttest");
+		OrchidStringMessageStorage dml = new OrchidStringMessageStorage(provider);
+		provider.setCacheMillis(500);
 		File root = new File("texttest");
 		File file1 = new File("texttest/bundle1/thread/1.txt");
 		File file2 = new File("texttest/bundle1/thread/2.txt");
@@ -120,7 +126,8 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testFunctions() throws IOException {
 		Locale.setDefault(Locale.US);
-		OrchidDirectoryMessageFormatLoader dml = new OrchidDirectoryMessageFormatLoader("texttest");
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>("texttest");
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
 		dml.start();
 		Assert.assertEquals("The base text and the embedded: Default Hi", dml.getMessage("func.base").format(OrchidMessage.arg("msg", "Hi")));
 		Assert.assertEquals("The base text and the embedded: SV Hi", dml.getMessage("func.base", new Locale("sv", "SE")).format(OrchidMessage.arg("msg", "Hi")));
@@ -129,7 +136,8 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testChoice() throws IOException {
 		Locale.setDefault(Locale.US);
-		OrchidDirectoryMessageFormatLoader dml = new OrchidDirectoryMessageFormatLoader("texttest");
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>("texttest");
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
 		dml.start();
 		Assert.assertEquals("The base text and the choice: Type 1", dml.getMessage("choice.base").format(OrchidMessage.arg("type", 1)));
 		Assert.assertEquals("The base text and the choice: Type 2", dml.getMessage("choice.base").format(OrchidMessage.arg("type", 2)));
@@ -139,7 +147,8 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testPopeties() throws IOException {
 		Locale.setDefault(Locale.US);
-		OrchidDirectoryMessageFormatLoader dml = new OrchidDirectoryMessageFormatLoader("texttest");
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>("texttest");
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
 		dml.start();
 		Assert.assertEquals("This is the title", dml.getMessage("props.b1.text.title").format(OrchidMessage.arg("type", 1)));
 	}
@@ -147,8 +156,9 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testMessageSourceLocale() throws IOException {
 		Locale.setDefault(Locale.US);
-		OrchidDirectoryMessageFormatLoader dml = new OrchidDirectoryMessageFormatLoader();
-		dml.setRoot("texttest/test");
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>();
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
+		provider.setRoot("texttest/test");
 		dml.start();
 		Assert.assertEquals("default1", dml.getMessage(TestMessages.LOCAL_1, Locale.getDefault()).format(null));
 		Assert.assertEquals("default2", dml.getMessage(TestMessages.LOCAL_2, Locale.getDefault()).format(null));

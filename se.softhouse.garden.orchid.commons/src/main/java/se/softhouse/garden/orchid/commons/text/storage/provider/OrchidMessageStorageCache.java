@@ -16,22 +16,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.commons.text.loader;
+package se.softhouse.garden.orchid.commons.text.storage.provider;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A message cache that loads strings from bare files in a directory structure.
@@ -50,22 +42,19 @@ import java.util.regex.Pattern;
  * @author Mikael Svahn
  * 
  */
-public class OrchidDirectoryMessageCache<T> {
+public abstract class OrchidMessageStorageCache<T> {
 
-	private static final Pattern FILE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)\\.?(.*)");
-	private static final Pattern LOCALE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)_?([^.]*)");
-
-	private final OrchidDirectoryMessageTree cachedTree;
-	private final Map<String, Map<String, T>> cachedMessages;
-	private String charsetName = "UTF-8";
-	private MessageFactory<T> messageFactory;
+	protected OrchidMessageStorageCacheTree cachedTree;
+	protected Map<String, Map<String, T>> cachedMessages;
+	protected String charsetName = "UTF-8";
+	protected MessageFactory<T> messageFactory;
 
 	/**
 	 * Creates a cache instance
 	 */
-	public OrchidDirectoryMessageCache() {
+	public OrchidMessageStorageCache() {
 		this.cachedMessages = new HashMap<String, Map<String, T>>();
-		this.cachedTree = new OrchidDirectoryMessageTree();
+		this.cachedTree = new OrchidMessageStorageCacheTree();
 	}
 
 	/**
@@ -113,8 +102,8 @@ public class OrchidDirectoryMessageCache<T> {
 	 *            The directory to read from
 	 * @throws IOException
 	 */
-	public void load(File dir) throws IOException {
-		loadAllMessages("", dir);
+	public void load() throws IOException {
+		loadAllMessages("");
 	}
 
 	/**
@@ -159,7 +148,7 @@ public class OrchidDirectoryMessageCache<T> {
 			if (map != null) {
 				T message = map.get(code);
 				if (message != null) {
-					return message;
+					return this.messageFactory.createMessage(message, locale);
 				}
 			}
 		}
@@ -191,30 +180,6 @@ public class OrchidDirectoryMessageCache<T> {
 		map.put(code, message);
 		this.cachedTree.addMessage(code, locale);
 		return message;
-	}
-
-	/**
-	 * Reads the specified file and returns its content as a string.
-	 * 
-	 * @param file
-	 *            The file to read
-	 * 
-	 * @return The read string
-	 * @throws IOException
-	 */
-	protected String readFileAsString(File file) throws IOException {
-		DataInputStream dis = new DataInputStream(new FileInputStream(file));
-		try {
-			long len = file.length();
-			if (len > Integer.MAX_VALUE) {
-				throw new IOException("File " + file + " too large, was " + len + " bytes.");
-			}
-			byte[] bytes = new byte[(int) len];
-			dis.readFully(bytes);
-			return new String(bytes, this.charsetName);
-		} finally {
-			dis.close();
-		}
 	}
 
 	/**
@@ -268,88 +233,18 @@ public class OrchidDirectoryMessageCache<T> {
 	}
 
 	/**
-	 * Load all messages in the specified dir and sub dirs into the package.
+	 * Load all messages from the store into the package.
 	 * 
 	 * @param pkg
 	 *            The prefix to add to the code
-	 * @param dir
-	 *            The dir to read
 	 * @throws IOException
 	 */
-	protected void loadAllMessages(String pkg, File dir) throws IOException {
-		ArrayList<File> dirs = new ArrayList<File>();
-		File[] listFiles = dir.listFiles();
-		if (listFiles != null) {
-			for (File file : listFiles) {
-				if (file.isFile()) {
-					loadMessageFromFile(pkg, file);
-				} else if (file.isDirectory()) {
-					dirs.add(file);
-				}
-			}
-		}
-		for (File file : dirs) {
-			loadAllMessages(getPackage(pkg, file.getName()), file);
-		}
-	}
-
-	/**
-	 * Load a message from the specified file into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @param file
-	 *            The file to read
-	 * @throws IOException
-	 */
-	protected void loadMessageFromFile(String pkg, File file) throws IOException {
-		Matcher matcher = FILE_PATTERN.matcher(file.getName());
-		if (matcher.matches()) {
-			String code = matcher.group(1);
-			String localeCode = matcher.group(2).toLowerCase();
-			String ext = matcher.group(3);
-
-			Locale locale = Locale.getDefault();
-			Matcher localeMatcher = LOCALE_PATTERN.matcher(localeCode);
-			if (localeMatcher.matches()) {
-				locale = new Locale(localeMatcher.group(1), localeMatcher.group(2), localeMatcher.group(3));
-			}
-
-			if ("properties".equals(ext)) {
-				loadMessageFromPropertyFile(getPackage(pkg, code), file, localeCode, locale);
-			} else {
-				String fileAsString = readFileAsString(file);
-				addToCache(getPackage(pkg, code), localeCode, this.messageFactory.createMessage(fileAsString, locale));
-			}
-		}
-	}
-
-	/**
-	 * Load all messages from the specified property file into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @param file
-	 *            The file to read
-	 * @param localeCode
-	 *            The locale to load the messages into
-	 * @throws IOException
-	 */
-	protected void loadMessageFromPropertyFile(String pkg, File file, String localeCode, Locale locale) throws IOException {
-		Properties props = new Properties();
-		FileInputStream in = new FileInputStream(file);
-		props.load(in);
-		in.close();
-		Set<Entry<Object, Object>> entrySet = props.entrySet();
-		for (Entry<Object, Object> entry : entrySet) {
-			addToCache(getPackage(pkg, (String) entry.getKey()), localeCode, this.messageFactory.createMessage((String) entry.getValue(), locale));
-		}
-	}
+	protected abstract void loadAllMessages(String pkg) throws IOException;
 
 	/**
 	 * Create a package name by concat the pkg and the name.
 	 */
-	final private String getPackage(String pkg, String name) {
+	protected String getPackage(String pkg, String name) {
 		return (pkg.length() > 0 ? pkg + "." : "") + name;
 
 	}
@@ -369,6 +264,19 @@ public class OrchidDirectoryMessageCache<T> {
 		 * @return The created T
 		 */
 		public abstract T createMessage(String message, Locale local);
+
+		/**
+		 * Create a T from a T. The same instance can be returned if it is
+		 * thread safe.
+		 * 
+		 * @param message
+		 *            The message to copy if needed
+		 * @param locale
+		 *            The current locale
+		 * 
+		 * @return The created T
+		 */
+		public abstract T createMessage(T message, Locale local);
 	}
 
 }

@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.commons.text.loader;
+package se.softhouse.garden.orchid.commons.text.storage;
 
 import java.util.Locale;
 
@@ -24,7 +24,8 @@ import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat.OrchidMessageFormatFunctionExecutorResolver;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunctionExecutor;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatLookup;
-import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageCache.MessageFactory;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageProvider;
 
 /**
  * A message loader that load OrchidMessageFormats from bare files in a
@@ -33,43 +34,23 @@ import se.softhouse.garden.orchid.commons.text.loader.OrchidDirectoryMessageCach
  * @author Mikael Svahn
  * 
  */
-public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLoader<OrchidMessageFormat> implements OrchidMessageFormatLookup {
-
-	private MessageFactory<OrchidMessageFormat> messageFactory = new MessageFactory<OrchidMessageFormat>() {
-
-		@Override
-		public OrchidMessageFormat createMessage(String message, Locale locale) {
-			OrchidMessageFormat messageFormat = new OrchidMessageFormat("", locale);
-			messageFormat.setOrchidMessageFormatLookup(OrchidDirectoryMessageFormatLoader.this);
-			messageFormat.setFunctionResolver(resolveFunction());
-			messageFormat.applyPattern(message);
-			return messageFormat;
-		}
-
-	};
+public class OrchidMessageFormatStorage extends OrchidMessageStorage<OrchidMessageFormat> implements OrchidMessageFormatLookup {
 
 	/**
 	 * The constructor which creates an empty cache
 	 */
-	public OrchidDirectoryMessageFormatLoader() {
+	public OrchidMessageFormatStorage() {
 		super();
 	}
 
 	/**
-	 * Creates an instance and loads the content from the specified root path.
+	 * The constructor which creates an empty cache
 	 * 
-	 * @param root
-	 *            The relative path
+	 * @param provider
+	 *            The storage provider to use
 	 */
-	public OrchidDirectoryMessageFormatLoader(String root) {
-		super(root);
-	}
-
-	/**
-	 * Set the MessageFactory to use when loading texts from file
-	 */
-	public void setMessageFactory(MessageFactory<OrchidMessageFormat> messageFactory) {
-		this.messageFactory = messageFactory;
+	public OrchidMessageFormatStorage(OrchidMessageStorageProvider<OrchidMessageFormat> provider) {
+		super(provider);
 	}
 
 	/*
@@ -79,8 +60,26 @@ public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLo
 	 * #createMessage()
 	 */
 	@Override
-	protected MessageFactory<OrchidMessageFormat> createMessage() {
-		return this.messageFactory;
+	protected MessageFactory<OrchidMessageFormat> createMessageFactory() {
+		return new MessageFactory<OrchidMessageFormat>() {
+
+			@Override
+			public OrchidMessageFormat createMessage(String message, Locale locale) {
+				OrchidMessageFormat messageFormat = new OrchidMessageFormat("", locale);
+				messageFormat.setOrchidMessageFormatLookup(OrchidMessageFormatStorage.this);
+				messageFormat.setFunctionResolver(createFunctionResolvern());
+				messageFormat.applyPattern(message);
+				return messageFormat;
+			}
+
+			@Override
+			public OrchidMessageFormat createMessage(OrchidMessageFormat message, Locale locale) {
+				OrchidMessageFormat messageFormat = (OrchidMessageFormat) message.clone();
+				messageFormat.setLocale(locale);
+				return messageFormat;
+			}
+
+		};
 	}
 
 	/*
@@ -90,13 +89,8 @@ public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLo
 	 * #getMessageFromCache(java.lang.String, java.util.Locale)
 	 */
 	@Override
-	protected OrchidMessageFormat getMessageFromCache(String code, Locale locale) {
-		OrchidMessageFormat message = super.getMessageFromCache(code, locale);
-		if (message != null) {
-			message = (OrchidMessageFormat) message.clone();
-			message.setLocale(locale);
-		}
-		return message;
+	protected OrchidMessageFormat getMessageFromProvider(String code, Locale locale) {
+		return super.getMessageFromProvider(code, locale);
 	}
 
 	/**
@@ -104,7 +98,7 @@ public class OrchidDirectoryMessageFormatLoader extends OrchidDirectoryMessageLo
 	 * 
 	 * @return The function resolver
 	 */
-	protected OrchidMessageFormatFunctionExecutorResolver resolveFunction() {
+	protected OrchidMessageFormatFunctionExecutorResolver createFunctionResolvern() {
 		return new OrchidMessageFormatFunctionExecutorResolver() {
 			@Override
 			protected Object resolveFunction(String function, String value, OrchidMessageFormatLookup lookup) {
