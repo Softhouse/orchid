@@ -36,7 +36,7 @@ import se.softhouse.garden.orchid.commons.text.OrchidMessageCode;
  */
 public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessageStorageProvider<T> {
 
-	protected AtomicReference<OrchidMessageDirectoryStorageCache<T>> cachedMessages = new AtomicReference<OrchidMessageDirectoryStorageCache<T>>();
+	protected AtomicReference<OrchidMessageStorageCache<T>> cachedMessages = new AtomicReference<OrchidMessageStorageCache<T>>();
 	protected AtomicLong lastCacheTime = new AtomicLong(0);
 
 	protected Timer timer;
@@ -192,10 +192,9 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 	public void reload(boolean force) throws IOException {
 		long cacheTime = getLastModified();
 		if (force || this.lastCacheTime.get() < cacheTime) {
-			OrchidMessageDirectoryStorageCache<T> cache = createMessageCache();
-			cache.setCharsetName(this.charsetName);
+			OrchidMessageStorageCache<T> cache = createMessageCache();
 			cache.setMessageFactory(getMessageFactory());
-			cache.load();
+			loadAllMessages(cache, "");
 
 			this.lastCacheTime.set(cacheTime);
 			this.cachedMessages.set(cache);
@@ -205,11 +204,20 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 	/**
 	 * Creates a new message cache
 	 */
-	protected abstract OrchidMessageDirectoryStorageCache<T> createMessageCache();
+	protected abstract OrchidMessageStorageCache<T> createMessageCache();
 
 	/**
 	 * Return the timestamp when the storage was last updated
 	 */
 	protected abstract long getLastModified();
+
+	/**
+	 * Load all messages from the store into the package.
+	 * 
+	 * @param pkg
+	 *            The prefix to add to the code
+	 * @throws IOException
+	 */
+	protected abstract void loadAllMessages(OrchidMessageStorageCache<T> cache, String pkg) throws IOException;
 
 }

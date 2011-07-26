@@ -177,6 +177,19 @@ public class TestOrchidDirectoryMessageLoader {
 		Assert.assertEquals("email", dml.getMessage(TestMessages.LOCAL_4, new Locale("se", "", "email")).format(null));
 	}
 
+	@Test
+	public void testZip() throws IOException {
+		Locale.setDefault(Locale.US);
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>("texttest");
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
+		dml.start();
+		Assert.assertEquals("This is the title", dml.getMessage("props.b2.text.title").format(OrchidMessage.arg("type", 1)));
+		Assert.assertEquals("This is line 1", dml.getMessage("props.b2.text.line.1").format(OrchidMessage.arg("type", 1)));
+		Assert.assertEquals("This is line 2", dml.getMessage("props.b2.text.line.2").format(OrchidMessage.arg("type", 1)));
+		Assert.assertEquals("This is line 3", dml.getMessage("props.b2.text.line.3").format(OrchidMessage.arg("type", 1)));
+		Assert.assertEquals("This is line 4", dml.getMessage("props.b2.text.line.4").format(OrchidMessage.arg("type", 1)));
+	}
+
 	private void writeFileContent(String text, File file) throws FileNotFoundException, IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		fos.write(text.getBytes());

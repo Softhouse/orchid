@@ -18,7 +18,6 @@
  */
 package se.softhouse.garden.orchid.commons.text.storage.provider;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,11 +41,10 @@ import java.util.Map;
  * @author Mikael Svahn
  * 
  */
-public abstract class OrchidMessageStorageCache<T> {
+public class OrchidMessageStorageCache<T> {
 
 	protected OrchidMessageStorageCacheTree cachedTree;
 	protected Map<String, Map<String, T>> cachedMessages;
-	protected String charsetName = "UTF-8";
 	protected MessageFactory<T> messageFactory;
 
 	/**
@@ -55,23 +53,6 @@ public abstract class OrchidMessageStorageCache<T> {
 	public OrchidMessageStorageCache() {
 		this.cachedMessages = new HashMap<String, Map<String, T>>();
 		this.cachedTree = new OrchidMessageStorageCacheTree();
-	}
-
-	/**
-	 * Sets the charset to use when reading the files
-	 * 
-	 * @param charsetName
-	 *            The name of the {@linkplain java.nio.charset.Charset charset}.
-	 */
-	public void setCharsetName(String charsetName) {
-		this.charsetName = charsetName;
-	}
-
-	/**
-	 * Returns the charset
-	 */
-	public String getCharsetName() {
-		return this.charsetName;
 	}
 
 	/**
@@ -93,17 +74,6 @@ public abstract class OrchidMessageStorageCache<T> {
 	 */
 	public void clear() {
 		this.cachedMessages.clear();
-	}
-
-	/**
-	 * Load messages into the cache from the specified directory
-	 * 
-	 * @param dir
-	 *            The directory to read from
-	 * @throws IOException
-	 */
-	public void load() throws IOException {
-		loadAllMessages("");
 	}
 
 	/**
@@ -230,23 +200,6 @@ public abstract class OrchidMessageStorageCache<T> {
 		result.add("");
 
 		return result;
-	}
-
-	/**
-	 * Load all messages from the store into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @throws IOException
-	 */
-	protected abstract void loadAllMessages(String pkg) throws IOException;
-
-	/**
-	 * Create a package name by concat the pkg and the name.
-	 */
-	protected String getPackage(String pkg, String name) {
-		return (pkg.length() > 0 ? pkg + "." : "") + name;
-
 	}
 
 	/**
