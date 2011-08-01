@@ -122,6 +122,19 @@ public class OrchidMessageArguments {
 	}
 
 	/**
+	 * Adds an argument to this instance.
+	 * 
+	 * @param name
+	 *            The name of the argument
+	 * @param value
+	 *            The value of the argument
+	 */
+	public OrchidMessageArguments func(String id, Object value) {
+		this.args.put(OrchidMessageFormatFunction.ORCHID_FUNC + id, value);
+		return this;
+	}
+
+	/**
 	 * Returns a {@link Map} of all arguments of this instance.
 	 */
 	public Map<String, Object> getArgs() {

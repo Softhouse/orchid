@@ -19,15 +19,21 @@
 package se.softhouse.garden.orchid.text;
 
 import static se.softhouse.garden.orchid.commons.text.OrchidMessage.arg;
+import static se.softhouse.garden.orchid.commons.text.OrchidMessage.args;
+import static se.softhouse.garden.orchid.commons.text.OrchidMessage.func;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArgumentCode;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
+import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunctionExecutor;
 
 public class TestOrchidMessageFormat {
 
@@ -52,6 +58,15 @@ public class TestOrchidMessageFormat {
 		OrchidMessageFormat omf = new OrchidMessageFormat("Test message {0}");
 		Assert.assertEquals("Test message 1", omf.format(new Object[] { 1 }));
 		Assert.assertEquals("Test message 1", omf.format(arg("0", 1)));
+		Assert.assertEquals("Test message null", OrchidMessageFormat.format("Test message {id}", args()));
+	}
+
+	@Test
+	public void testFunction() {
+		Assert.assertEquals("Test message {id}", OrchidMessageFormat.format("Test message {m:id}", arg("id", 1)));
+		Assert.assertEquals("Test message {x:id}", OrchidMessageFormat.format("Test message {x:id}", arg("id", 1)));
+		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", args().func("test", new TestFunction())));
+		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", func("test", new TestFunction())));
 	}
 
 	public enum TestMessages implements OrchidMessageCode {
@@ -95,5 +110,14 @@ public class TestOrchidMessageFormat {
 		public String getRealName() {
 			return name().toLowerCase();
 		}
+	}
+
+	public class TestFunction implements OrchidMessageFormatFunction {
+
+		@Override
+		public Object execute(OrchidMessageFormatFunctionExecutor executor, OrchidMessageArguments args, Locale locale) {
+			return executor.getFunction() + "-" + executor.getValue();
+		}
+
 	}
 }

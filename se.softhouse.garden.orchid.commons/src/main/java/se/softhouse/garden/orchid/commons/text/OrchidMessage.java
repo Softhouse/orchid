@@ -56,6 +56,20 @@ public abstract class OrchidMessage {
 	}
 
 	/**
+	 * Creates an instance and adds one function.
+	 * 
+	 * @param name
+	 *            The name of the function
+	 * @param value
+	 *            The value of the argument
+	 * 
+	 * @return The created {@link OrchidMessageArguments}
+	 */
+	public static OrchidMessageArguments func(String name, Object value) {
+		return new OrchidMessageArguments(OrchidMessageFormatFunction.ORCHID_FUNC + name, value);
+	}
+
+	/**
 	 * Creates an instance without any arguments
 	 */
 	public static OrchidMessageArguments args() {

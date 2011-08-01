@@ -28,6 +28,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import se.softhouse.garden.orchid.commons.text.OrchidDefaultMessageCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
 import se.softhouse.garden.orchid.commons.text.storage.OrchidMessageFormatStorage;
@@ -49,6 +50,7 @@ public class TestOrchidDirectoryMessageLoader {
 		Assert.assertEquals("svse", dml.getMessage("bundle1.msg.2", new Locale("sv", "SE")));
 		Assert.assertEquals("ense", dml.getMessage("bundle1.msg.2", new Locale("en", "SE")));
 		Assert.assertEquals("se", dml.getMessage("bundle1.msg.2", new Locale("de", "SE")));
+		Assert.assertEquals("se", dml.getMessage(new OrchidDefaultMessageCode("bundle1.msg.2"), new Locale("de", "SE")));
 	}
 
 	@Test

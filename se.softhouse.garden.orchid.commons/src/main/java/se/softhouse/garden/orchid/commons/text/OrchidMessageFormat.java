@@ -269,7 +269,11 @@ public class OrchidMessageFormat extends MessageFormat {
 	 * @return The object to insert as an argument
 	 */
 	protected Object resolveFunction(String function, String value) {
-		return this.functionResolver.resolveFunction(function, value, this.orchidMessageFormatLookup);
+		if (this.functionResolver != null) {
+			return this.functionResolver.resolveFunction(function, value, this.orchidMessageFormatLookup);
+		} else {
+			return new OrchidMessageFormatFunctionExecutor(function, value, null);
+		}
 	}
 
 	/**

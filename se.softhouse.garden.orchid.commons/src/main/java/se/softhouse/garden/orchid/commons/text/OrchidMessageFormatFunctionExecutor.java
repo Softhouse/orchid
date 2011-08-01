@@ -109,7 +109,7 @@ public class OrchidMessageFormatFunctionExecutor {
 			if (func != null) {
 				return func.execute(this, args, locale);
 			}
-			return null;
+			return "{" + this.function + ":" + this.value + "}";
 		}
 	}
 
