@@ -63,12 +63,4 @@ public abstract class OrchidMessageStorageProvider<T> {
 		return this.messageFactory;
 	}
 
-	/**
-	 * Create a package name by concat the pkg and the name.
-	 */
-	protected String getPackage(String pkg, String name) {
-		return (pkg.length() > 0 ? pkg + "." : "") + name;
-
-	}
-
 }

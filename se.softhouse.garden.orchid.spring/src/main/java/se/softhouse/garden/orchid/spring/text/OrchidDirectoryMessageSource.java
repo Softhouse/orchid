@@ -38,10 +38,17 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 	}
 
 	/**
-	 * Sets the path to root directory to read messages from
+	 * Sets the path to the directory to read messages from
 	 */
-	public void setRoot(String root) {
-		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setRoot(root);
+	public void setDir(String dir) {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setDir(dir);
+	}
+
+	/**
+	 * Sets the path to the directory to read messages from
+	 */
+	public void setDirs(String[] dirs) {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setDirs(dirs);
 	}
 
 	/**
@@ -70,6 +77,17 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 	 */
 	public void setCharsetName(String charsetName) {
 		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCharsetName(charsetName);
+	}
+
+	/**
+	 * Set the package level to skip in packages when mapping directories to
+	 * message keys, eg. the path a/b/c/d.txt will be mapped to a.b.c.d with
+	 * level=0 and c.d with level=2. All files will be read in the directory
+	 * structure but if the level is to high so that the key will be empty, it
+	 * will not be used.
+	 */
+	public void setPackageStartLevel(int packageStartLevel) {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setPackageStartLevel(packageStartLevel);
 	}
 
 }

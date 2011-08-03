@@ -19,6 +19,8 @@
 package se.softhouse.garden.orchid.commons.text.storage.provider;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -194,7 +196,7 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 		if (force || this.lastCacheTime.get() < cacheTime) {
 			OrchidMessageStorageCache<T> cache = createMessageCache();
 			cache.setMessageFactory(getMessageFactory());
-			loadAllMessages(cache, "");
+			loadAllMessages(cache, new ArrayList<String>());
 
 			this.lastCacheTime.set(cacheTime);
 			this.cachedMessages.set(cache);
@@ -214,10 +216,10 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 	/**
 	 * Load all messages from the store into the package.
 	 * 
-	 * @param pkg
+	 * @param pkgs
 	 *            The prefix to add to the code
 	 * @throws IOException
 	 */
-	protected abstract void loadAllMessages(OrchidMessageStorageCache<T> cache, String pkg) throws IOException;
+	protected abstract void loadAllMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs) throws IOException;
 
 }

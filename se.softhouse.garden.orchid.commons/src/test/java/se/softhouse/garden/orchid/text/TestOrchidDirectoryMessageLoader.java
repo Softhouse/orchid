@@ -160,7 +160,7 @@ public class TestOrchidDirectoryMessageLoader {
 		Locale.setDefault(Locale.US);
 		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>();
 		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
-		provider.setRoot("texttest/test");
+		provider.setDir("texttest/test");
 		dml.start();
 		Assert.assertEquals("default1", dml.getMessage(TestMessages.LOCAL_1, Locale.getDefault()).format(null));
 		Assert.assertEquals("default2", dml.getMessage(TestMessages.LOCAL_2, Locale.getDefault()).format(null));
@@ -196,5 +196,40 @@ public class TestOrchidDirectoryMessageLoader {
 		FileOutputStream fos = new FileOutputStream(file);
 		fos.write(text.getBytes());
 		fos.close();
+	}
+
+	@Test
+	public void testMultiDirs() throws IOException {
+		Locale.setDefault(Locale.US);
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>();
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
+		provider.setDirs(new String[] { "texttest/test", "texttest/props" });
+		dml.start();
+		Assert.assertEquals("default1", dml.getMessage(TestMessages.LOCAL_1, Locale.getDefault()).format(null));
+		Assert.assertEquals("This is the title", dml.getMessage("b2.text.title").format(OrchidMessage.arg("type", 1)));
+	}
+
+	@Test
+	public void testDirLevel() throws IOException {
+		Locale.setDefault(Locale.US);
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>();
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
+		provider.setDirs(new String[] { "texttest" });
+		provider.setPackageStartLevel(1);
+		dml.start();
+		Assert.assertEquals("default1", dml.getMessage(TestMessages.LOCAL_1, Locale.getDefault()).format(null));
+		Assert.assertEquals("This is the title", dml.getMessage("b2.text.title").format(OrchidMessage.arg("type", 1)));
+	}
+
+	@Test
+	public void testDirLevelWithZip() throws IOException {
+		Locale.setDefault(Locale.US);
+		OrchidMessageDirectoryStorageProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>();
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
+		provider.setDirs(new String[] { "texttest/props", "texttest/test" });
+		provider.setPackageStartLevel(2);
+		dml.start();
+		Assert.assertEquals("This is line 1", dml.getMessage("line.1").format(OrchidMessage.arg("type", 1)));
+		Assert.assertEquals("This is the title", dml.getMessage("title").format(OrchidMessage.arg("type", 1)));
 	}
 }

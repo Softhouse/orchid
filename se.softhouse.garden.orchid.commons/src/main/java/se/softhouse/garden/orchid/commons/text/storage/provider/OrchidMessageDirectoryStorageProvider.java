@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -55,11 +56,12 @@ import java.util.zip.ZipFile;
  */
 public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStorageCachedProvider<T> {
 
-	private static final Pattern FILE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)\\.?(.*)");
-	private static final Pattern LOCALE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)_?([^.]*)");
+	protected static final Pattern FILE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)\\.?(.*)");
+	protected static final Pattern LOCALE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)_?([^.]*)");
 
-	private OrchidMessageResource root;
-	private OrchidMessageResource watchFile;
+	protected OrchidMessageResource[] dirs;
+	protected OrchidMessageResource watchFile;
+	private int packageStartLevel = 0;
 
 	/**
 	 * The constructor which creates an empty cache
@@ -75,8 +77,8 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	public OrchidMessageDirectoryStorageProvider(String root) throws IOException {
 		this();
-		this.root = new OrchidMessageFileResource(new File(root));
-		this.watchFile = this.root;
+		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(new File(root)) };
+		this.watchFile = this.dirs[0];
 	}
 
 	/**
@@ -87,25 +89,54 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	public OrchidMessageDirectoryStorageProvider(File root) throws IOException {
 		this();
-		this.root = new OrchidMessageFileResource(root);
-		this.watchFile = new OrchidMessageFileResource(root);
+		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(root) };
+		this.watchFile = this.dirs[0];
 	}
 
 	/**
-	 * Sets the path to root directory to read messages from
+	 * Sets the path to the directory to read messages from
 	 */
-	public void setRoot(String root) {
-		this.root = new OrchidMessageFileResource(new File(root));
+	public void setDir(String dir) {
+		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(new File(dir)) };
 		if (this.watchFile == null) {
-			this.watchFile = this.root;
+			this.watchFile = this.dirs[0];
 		}
 	}
 
 	/**
-	 * Sets the path to root directory to read messages from
+	 * Sets the paths to the directories to read messages from
 	 */
-	public void setRoot(File root) {
-		this.root = new OrchidMessageFileResource(root);
+	public void setDirs(String[] dirs) {
+		this.dirs = new OrchidMessageResource[dirs.length];
+		for (int i = 0; i < dirs.length; i++) {
+			this.dirs[i] = new OrchidMessageFileResource(new File(dirs[i]));
+		}
+		if (this.watchFile == null && this.dirs.length > 0) {
+			this.watchFile = this.dirs[0];
+		}
+	}
+
+	/**
+	 * Sets the path to directory to read messages from
+	 */
+	public void setDir(File dir) {
+		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(dir) };
+		if (this.watchFile == null) {
+			this.watchFile = this.dirs[0];
+		}
+	}
+
+	/**
+	 * Sets the paths to the directories to read messages from
+	 */
+	public void setDir(File[] dirs) {
+		this.dirs = new OrchidMessageResource[dirs.length];
+		for (int i = 0; i < dirs.length; i++) {
+			this.dirs[i] = new OrchidMessageFileResource(dirs[i]);
+		}
+		if (this.watchFile == null && this.dirs.length > 0) {
+			this.watchFile = this.dirs[0];
+		}
 	}
 
 	/**
@@ -114,6 +145,17 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	public void setWatchFile(String file) {
 		this.watchFile = new OrchidMessageFileResource(new File(file));
+	}
+
+	/**
+	 * Set the package level to skip in packages when mapping directories to
+	 * message keys, eg. the path a/b/c/d.txt will be mapped to a.b.c.d with
+	 * level=0 and c.d with level=2. All files will be read in the directory
+	 * structure but if the level is to high so that the key will be empty, it
+	 * will not be used.
+	 */
+	public void setPackageStartLevel(int packageStartLevel) {
+		this.packageStartLevel = packageStartLevel;
 	}
 
 	/*
@@ -138,13 +180,23 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 		if (this.watchFile != null) {
 			return this.watchFile.getLastModified();
 		} else {
-			return this.root.getLastModified();
+			return 0;
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see se.softhouse.garden.orchid.commons.text.storage.provider.
+	 * OrchidMessageStorageCachedProvider
+	 * #loadAllMessages(se.softhouse.garden.orchid
+	 * .commons.text.storage.provider.OrchidMessageStorageCache,
+	 * java.lang.String)
+	 */
 	@Override
-	protected void loadAllMessages(OrchidMessageStorageCache<T> cache, String pkg) throws IOException {
-		loadAllMessages(cache, pkg, this.root);
+	protected void loadAllMessages(OrchidMessageStorageCache<T> cache, List<String> pkg) throws IOException {
+		for (OrchidMessageResource dir : this.dirs) {
+			loadMessages(cache, pkg, dir);
+		}
 	}
 
 	/**
@@ -156,21 +208,36 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 *            The dir to read
 	 * @throws IOException
 	 */
-	protected void loadAllMessages(OrchidMessageStorageCache<T> cache, String pkg, OrchidMessageResource dir) throws IOException {
+	protected void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, OrchidMessageResource dir) throws IOException {
 		ArrayList<OrchidMessageResource> dirs = new ArrayList<OrchidMessageResource>();
 		OrchidMessageResource[] listFiles = dir.list();
 		if (listFiles != null) {
 			for (OrchidMessageResource file : listFiles) {
 				if (file.isFile()) {
-					loadMessageFromFile(cache, pkg, file);
+					loadMessagesFromFile(cache, pkgs, file);
 				} else if (file.isDirectory()) {
 					dirs.add(file);
 				}
 			}
 		}
 		for (OrchidMessageResource file : dirs) {
-			loadAllMessages(cache, getPackage(pkg, file.getName()), file);
+			loadMessages(cache, createPackageList(pkgs, file.getName()), file);
 		}
+	}
+
+	/**
+	 * Create a new package list by copying the pkgs list and adding the code.
+	 * 
+	 * @param pkgs
+	 *            The current list to copy
+	 * @param code
+	 *            The code to add to the end of the list
+	 * @return The newly created list
+	 */
+	protected List<String> createPackageList(List<String> pkgs, String code) {
+		List<String> pkg = new ArrayList<String>(pkgs);
+		pkg.add(code);
+		return pkg;
 	}
 
 	/**
@@ -182,7 +249,7 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 *            The file to read
 	 * @throws IOException
 	 */
-	protected void loadMessageFromFile(OrchidMessageStorageCache<T> cache, String pkg, OrchidMessageResource file) throws IOException {
+	protected void loadMessagesFromFile(OrchidMessageStorageCache<T> cache, List<String> pkgs, OrchidMessageResource file) throws IOException {
 		Matcher matcher = FILE_PATTERN.matcher(file.getName());
 		if (matcher.matches()) {
 			String code = matcher.group(1);
@@ -196,13 +263,31 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 			}
 
 			if ("properties".equals(ext)) {
-				loadMessageFromPropertyFile(cache, getPackage(pkg, code), file, localeCode, locale);
+				loadMessagesFromPropertyFile(cache, createPackageList(pkgs, code), file, localeCode, locale);
 			} else if ("zip".equals(ext)) {
-				loadAllMessagesFromZipFile(cache, getPackage(pkg, code), file, localeCode, locale);
+				loadMessagesFromZipFile(cache, createPackageList(pkgs, code), file, localeCode, locale);
 			} else {
 				String fileAsString = readFileAsString(file);
-				cache.addToCache(getPackage(pkg, code), localeCode, this.messageFactory.createMessage(fileAsString, locale));
+				String c = formatCode(createPackageList(pkgs, code));
+				if (c != null) {
+					cache.addToCache(c, localeCode, this.messageFactory.createMessage(fileAsString, locale));
+				}
 			}
+		}
+	}
+
+	protected String formatCode(List<String> pkgs) {
+		StringBuilder b = new StringBuilder();
+		for (int i = this.packageStartLevel; i < pkgs.size(); i++) {
+			if (b.length() > 0) {
+				b.append('.');
+			}
+			b.append(pkgs.get(i));
+		}
+		if (b.length() > 0) {
+			return b.toString();
+		} else {
+			return null;
 		}
 	}
 
@@ -241,15 +326,18 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 *            The locale to load the messages into
 	 * @throws IOException
 	 */
-	protected void loadMessageFromPropertyFile(OrchidMessageStorageCache<T> cache, String pkg, OrchidMessageResource file, String localeCode, Locale locale)
-	        throws IOException {
+	protected void loadMessagesFromPropertyFile(OrchidMessageStorageCache<T> cache, List<String> pkg, OrchidMessageResource file, String localeCode,
+	        Locale locale) throws IOException {
 		Properties props = new Properties();
 		InputStream in = file.getInputStream();
 		props.load(in);
 		in.close();
 		Set<Entry<Object, Object>> entrySet = props.entrySet();
 		for (Entry<Object, Object> entry : entrySet) {
-			cache.addToCache(getPackage(pkg, (String) entry.getKey()), localeCode, this.messageFactory.createMessage((String) entry.getValue(), locale));
+			String c = formatCode(createPackageList(pkg, (String) entry.getKey()));
+			if (c != null) {
+				cache.addToCache(c, localeCode, this.messageFactory.createMessage((String) entry.getValue(), locale));
+			}
 		}
 	}
 
@@ -264,10 +352,11 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 *            The locale to load the messages into
 	 * @throws IOException
 	 */
-	protected void loadAllMessagesFromZipFile(OrchidMessageStorageCache<T> cache, String pkg, OrchidMessageResource file, String localeCode, Locale locale)
+	protected void loadMessagesFromZipFile(OrchidMessageStorageCache<T> cache, List<String> pkg, OrchidMessageResource file, String localeCode, Locale locale)
 	        throws IOException {
 		ZipFile zipFile = new ZipFile(file.getFile());
 		OrchidMessageZipResource zip = new OrchidMessageZipResource(zipFile, null);
-		loadAllMessages(cache, pkg, zip);
+		loadMessages(cache, pkg, zip);
 	}
+
 }

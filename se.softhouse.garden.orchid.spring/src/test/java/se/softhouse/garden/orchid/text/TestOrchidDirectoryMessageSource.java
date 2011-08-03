@@ -19,7 +19,7 @@ public class TestOrchidDirectoryMessageSource {
 	@Test
 	public void testMessageSource() throws IOException {
 		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
-		ms.setRoot("texttest/test");
+		ms.setDir("texttest/test");
 		ms.setUseCodeAsDefaultMessage(true);
 		ms.start();
 		Assert.assertEquals("FileTest message", ms.getMessage("msg0", (Object[]) null, Locale.getDefault()));
@@ -33,7 +33,7 @@ public class TestOrchidDirectoryMessageSource {
 	@Test
 	public void testMessageSourceResolvable() throws IOException {
 		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
-		ms.setRoot("texttest/test");
+		ms.setDir("texttest/test");
 		ms.setUseCodeAsDefaultMessage(true);
 		ms.start();
 		Assert.assertEquals("FileTest message", ms.getMessage(code(TestMessages.MSG0), Locale.getDefault()));
@@ -50,7 +50,7 @@ public class TestOrchidDirectoryMessageSource {
 	@Test
 	public void testMessageSourceLocale() throws IOException {
 		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
-		ms.setRoot("texttest/test");
+		ms.setDir("texttest/test");
 		ms.start();
 		Assert.assertEquals("default1", ms.getMessage(code(TestMessages.LOCAL_1), Locale.getDefault()));
 		Assert.assertEquals("default2", ms.getMessage(code(TestMessages.LOCAL_2), Locale.getDefault()));
@@ -72,7 +72,7 @@ public class TestOrchidDirectoryMessageSource {
 	@Test
 	public void testMessageSourceEmbedded() throws IOException {
 		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
-		ms.setRoot("texttest/test");
+		ms.setDir("texttest/test");
 		ms.start();
 		Assert.assertEquals("Message with an embedded message EmbeddedMessage", ms.getMessage(code(TestMessages.EMBEDDED_0), Locale.getDefault()));
 		Assert.assertEquals("Message with an embedded message {embedded.11}", ms.getMessage(code(TestMessages.EMBEDDED_10), Locale.getDefault()));
@@ -81,7 +81,7 @@ public class TestOrchidDirectoryMessageSource {
 	@Test
 	public void testMessageSourceEmbeddedWithArgs() throws IOException {
 		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
-		ms.setRoot("texttest/test");
+		ms.setDir("texttest/test");
 		ms.setUseCodeAsDefaultMessage(true);
 		ms.start();
 		Assert.assertEquals("Message with an embedded message Embedded Wille",

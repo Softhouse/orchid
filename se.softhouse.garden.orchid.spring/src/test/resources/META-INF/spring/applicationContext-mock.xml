@@ -41,6 +41,6 @@
 		<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
 	</context:component-scan>
 
-	<bean class="se.softhouse.garden.orchid.spring.text.OrchidDirectoryMessageSource" id="messageSource" p:root="texttest/test" p:useCodeAsDefaultMessage="true" />
+	<bean class="se.softhouse.garden.orchid.spring.text.OrchidDirectoryMessageSource" id="messageSource" p:dirs="texttest/test" p:useCodeAsDefaultMessage="true" />
 
 </beans>
