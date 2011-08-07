@@ -18,10 +18,10 @@
  */
 package se.softhouse.garden.orchid.commons.text.storage.provider;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +30,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipFile;
 
 /**
  * An abstract message loader that loads strings from bare files in a directory
@@ -82,18 +81,6 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	}
 
 	/**
-	 * Creates an instance and loads the content from the specified root path.
-	 * 
-	 * @param root
-	 *            The relative path
-	 */
-	public OrchidMessageDirectoryStorageProvider(File root) throws IOException {
-		this();
-		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(root) };
-		this.watchFile = this.dirs[0];
-	}
-
-	/**
 	 * Sets the path to the directory to read messages from
 	 */
 	public void setDir(String dir) {
@@ -110,29 +97,6 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 		this.dirs = new OrchidMessageResource[dirs.length];
 		for (int i = 0; i < dirs.length; i++) {
 			this.dirs[i] = new OrchidMessageFileResource(new File(dirs[i]));
-		}
-		if (this.watchFile == null && this.dirs.length > 0) {
-			this.watchFile = this.dirs[0];
-		}
-	}
-
-	/**
-	 * Sets the path to directory to read messages from
-	 */
-	public void setDir(File dir) {
-		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(dir) };
-		if (this.watchFile == null) {
-			this.watchFile = this.dirs[0];
-		}
-	}
-
-	/**
-	 * Sets the paths to the directories to read messages from
-	 */
-	public void setDir(File[] dirs) {
-		this.dirs = new OrchidMessageResource[dirs.length];
-		for (int i = 0; i < dirs.length; i++) {
-			this.dirs[i] = new OrchidMessageFileResource(dirs[i]);
 		}
 		if (this.watchFile == null && this.dirs.length > 0) {
 			this.watchFile = this.dirs[0];
@@ -301,18 +265,22 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 * @throws IOException
 	 */
 	protected String readFileAsString(OrchidMessageResource file) throws IOException {
-		DataInputStream dis = new DataInputStream(file.getInputStream());
+
+		char[] buffer = new char[0x10000];
+		StringBuilder out = new StringBuilder();
+		InputStreamReader in = new InputStreamReader(file.getInputStream());
+		int read;
 		try {
-			long len = file.getLength();
-			if (len > Integer.MAX_VALUE) {
-				throw new IOException("File " + file + " too large, was " + len + " bytes.");
-			}
-			byte[] bytes = new byte[(int) len];
-			dis.readFully(bytes);
-			return new String(bytes, this.charsetName);
+			do {
+				read = in.read(buffer, 0, buffer.length);
+				if (read > 0) {
+					out.append(buffer, 0, read);
+				}
+			} while (read >= 0);
 		} finally {
-			dis.close();
+			in.close();
 		}
+		return out.toString();
 	}
 
 	/**
@@ -354,8 +322,7 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	protected void loadMessagesFromZipFile(OrchidMessageStorageCache<T> cache, List<String> pkg, OrchidMessageResource file, String localeCode, Locale locale)
 	        throws IOException {
-		ZipFile zipFile = new ZipFile(file.getFile());
-		OrchidMessageZipResource zip = new OrchidMessageZipResource(zipFile, null);
+		OrchidMessageZipResource zip = new OrchidMessageZipResource(file.getName(), file.getInputStream());
 		loadMessages(cache, pkg, zip);
 	}
 

@@ -1,33 +1,55 @@
 package se.softhouse.garden.orchid.commons.text.storage.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class OrchidMessageZipResource implements OrchidMessageResource {
 
-	private final ZipFile file;
-	private final ZipEntry entry;
+	private final List<OrchidMessageZipEntryResource> entries;
+	private final String name;
 
-	public OrchidMessageZipResource(ZipFile file, ZipEntry entry) {
-		this.file = file;
-		this.entry = entry;
+	public OrchidMessageZipResource(String name, InputStream in) throws IOException {
+		this.name = name;
+		this.entries = new ArrayList<OrchidMessageZipEntryResource>();
+		unzip(in);
+	}
+
+	private void unzip(InputStream in) throws IOException {
+		final int BUFFER = 2048;
+		ZipInputStream zis = new ZipInputStream(in);
+
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			int count;
+			byte data[] = new byte[BUFFER];
+			ByteArrayOutputStream dest = new ByteArrayOutputStream();
+			while ((count = zis.read(data, 0, BUFFER)) != -1) {
+				dest.write(data, 0, count);
+			}
+			dest.close();
+			this.entries.add(new OrchidMessageZipEntryResource(this, entry, dest.toByteArray()));
+		}
+		zis.close();
 	}
 
 	@Override
 	public OrchidMessageResource[] list() {
+		return list(null);
+	}
+
+	protected OrchidMessageResource[] list(String path) {
 		ArrayList<OrchidMessageResource> resources = new ArrayList<OrchidMessageResource>();
-		File path = this.entry == null ? null : new File(this.entry.getName());
-		Enumeration<? extends ZipEntry> entries = this.file.entries();
-		while (entries.hasMoreElements()) {
-			ZipEntry element = entries.nextElement();
-			File parentFile = new File(element.getName()).getParentFile();
-			if (path == parentFile || (path != null && path.equals(parentFile))) {
-				resources.add(new OrchidMessageZipResource(this.file, element));
+		File filePath = path == null ? null : new File(path);
+		for (OrchidMessageZipEntryResource entry : this.entries) {
+			File parentFile = new File(entry.getEntry().getName()).getParentFile();
+			if (filePath == parentFile || filePath != null && filePath.equals(parentFile)) {
+				resources.add(entry);
 			}
 		}
 		return resources.toArray(new OrchidMessageResource[resources.size()]);
@@ -35,38 +57,27 @@ public class OrchidMessageZipResource implements OrchidMessageResource {
 
 	@Override
 	public boolean isFile() {
-		return !this.entry.isDirectory();
+		return false;
 	}
 
 	@Override
 	public boolean isDirectory() {
-		return this.entry.isDirectory();
+		return true;
 	}
 
 	@Override
 	public String getName() {
-		File f = new File(this.entry.getName());
-		return f.getName();
+		return this.name;
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return this.file.getInputStream(this.entry);
-	}
-
-	@Override
-	public long getLength() {
-		return this.entry.getSize();
-	}
-
-	@Override
-	public File getFile() {
 		return null;
 	}
 
 	@Override
 	public long getLastModified() {
-		return this.entry.getTime();
+		return 0;
 	}
 
 }

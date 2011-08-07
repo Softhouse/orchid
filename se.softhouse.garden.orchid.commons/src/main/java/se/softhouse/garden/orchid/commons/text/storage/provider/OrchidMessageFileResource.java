@@ -44,16 +44,6 @@ public class OrchidMessageFileResource implements OrchidMessageResource {
 	}
 
 	@Override
-	public long getLength() {
-		return this.file.length();
-	}
-
-	@Override
-	public File getFile() {
-		return this.file;
-	}
-
-	@Override
 	public long getLastModified() {
 		return this.file.lastModified();
 	}
