@@ -46,6 +46,7 @@ public class OrchidMessageStorageCache<T> {
 	protected OrchidMessageStorageCacheTree cachedTree;
 	protected Map<String, Map<String, T>> cachedMessages;
 	protected MessageFactory<T> messageFactory;
+	protected int packageStartLevel;
 
 	/**
 	 * Creates a cache instance
@@ -60,6 +61,13 @@ public class OrchidMessageStorageCache<T> {
 	 */
 	public void setMessageFactory(MessageFactory<T> messageFactory) {
 		this.messageFactory = messageFactory;
+	}
+
+	/**
+	 * Set the package start level
+	 */
+	public void setPackageStartLevel(int packageStartLevel) {
+		this.packageStartLevel = packageStartLevel;
 	}
 
 	/**
@@ -132,23 +140,26 @@ public class OrchidMessageStorageCache<T> {
 	/**
 	 * Add the specified message to the cache,
 	 * 
-	 * @param code
+	 * @param list
 	 *            The code of the message
 	 * @param locale
-	 *            The localte of the message
+	 *            The locale of the message
 	 * @param message
 	 *            The content of the message
 	 * 
 	 * @return The message
 	 */
-	protected T addToCache(String code, String locale, T message) {
-		Map<String, T> map = this.cachedMessages.get(locale);
-		if (map == null) {
-			map = new HashMap<String, T>();
-			this.cachedMessages.put(locale, map);
+	protected T addToCache(List<String> pkgs, String locale, T message) {
+		String c = formatCode(pkgs);
+		if (c != null) {
+			Map<String, T> map = this.cachedMessages.get(locale);
+			if (map == null) {
+				map = new HashMap<String, T>();
+				this.cachedMessages.put(locale, map);
+			}
+			map.put(c, message);
+			this.cachedTree.addMessage(c, locale);
 		}
-		map.put(code, message);
-		this.cachedTree.addMessage(code, locale);
 		return message;
 	}
 
@@ -200,6 +211,20 @@ public class OrchidMessageStorageCache<T> {
 		result.add("");
 
 		return result;
+	}
+
+	protected String formatCode(List<String> pkgs) {
+		StringBuilder b = new StringBuilder();
+		for (int i = this.packageStartLevel; i < pkgs.size(); i++) {
+			if (b.length() > 0) {
+				b.append('.');
+			}
+			b.append(pkgs.get(i));
+		}
+		if (b.length() > 0) {
+			return b.toString();
+		}
+		return null;
 	}
 
 	/**

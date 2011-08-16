@@ -21,13 +21,10 @@ package se.softhouse.garden.orchid.commons.text.storage.provider;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,12 +52,13 @@ import java.util.regex.Pattern;
  */
 public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStorageCachedProvider<T> {
 
+	protected static final Pattern URL_PATTERN = Pattern.compile("([^:.]*):(.*)");
 	protected static final Pattern FILE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)\\.?(.*)");
 	protected static final Pattern LOCALE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)_?([^.]*)");
+	protected static final Pattern ZIP_PATTERN = Pattern.compile("([^!]*)!(.+)");
 
 	protected OrchidMessageResource[] dirs;
-	protected OrchidMessageResource watchFile;
-	private int packageStartLevel = 0;
+	protected URL watchFile;
 
 	/**
 	 * The constructor which creates an empty cache
@@ -71,55 +69,113 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	/**
 	 * Creates an instance and loads the content from the specified root path.
 	 * 
-	 * @param root
+	 * @param spec
 	 *            The relative path
 	 */
-	public OrchidMessageDirectoryStorageProvider(String root) throws IOException {
+	public OrchidMessageDirectoryStorageProvider(String spec) throws IOException {
 		this();
-		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(new File(root)) };
-		this.watchFile = this.dirs[0];
+		this.dirs = new OrchidMessageResource[] { createResourceFromSpec(spec) };
 	}
 
 	/**
 	 * Sets the path to the directory to read messages from
+	 * 
+	 * @throws IOException
 	 */
-	public void setDir(String dir) {
-		this.dirs = new OrchidMessageResource[] { new OrchidMessageFileResource(new File(dir)) };
-		if (this.watchFile == null) {
-			this.watchFile = this.dirs[0];
-		}
+	public void setUrl(String spec) throws IOException {
+		setUrls(new String[] { spec });
 	}
 
 	/**
 	 * Sets the paths to the directories to read messages from
+	 * 
+	 * @throws IOException
 	 */
-	public void setDirs(String[] dirs) {
+	public void setUrls(String[] dirs) throws IOException {
 		this.dirs = new OrchidMessageResource[dirs.length];
 		for (int i = 0; i < dirs.length; i++) {
-			this.dirs[i] = new OrchidMessageFileResource(new File(dirs[i]));
-		}
-		if (this.watchFile == null && this.dirs.length > 0) {
-			this.watchFile = this.dirs[0];
+			this.dirs[i] = createResourceFromSpec(dirs[i]);
 		}
 	}
 
 	/**
 	 * Sets the path to the watch file/directory check if the cache shall be
 	 * reread.
+	 * 
+	 * @throws IOException
 	 */
-	public void setWatchFile(String file) {
-		this.watchFile = new OrchidMessageFileResource(new File(file));
+	public void setWatchUrl(String spec) throws IOException {
+		this.watchFile = new URL(spec);
 	}
 
 	/**
-	 * Set the package level to skip in packages when mapping directories to
-	 * message keys, eg. the path a/b/c/d.txt will be mapped to a.b.c.d with
-	 * level=0 and c.d with level=2. All files will be read in the directory
-	 * structure but if the level is to high so that the key will be empty, it
-	 * will not be used.
 	 */
-	public void setPackageStartLevel(int packageStartLevel) {
-		this.packageStartLevel = packageStartLevel;
+
+	protected OrchidMessageResource createResourceFromSpec(String spec) throws IOException {
+		Matcher matcher = URL_PATTERN.matcher(spec);
+		if (matcher.matches()) {
+			String protocol = matcher.group(1);
+			String path = matcher.group(2);
+			File file = new File(path);
+			OrchidMessageResourceInfo resourceInfo = createResourceInfo(file.getName());
+
+			if ("file".equals(protocol) && file.isDirectory()) {
+				return new OrchidMessageDirResource(this, resourceInfo, file);
+			} else if ("zip".equals(protocol)) {
+				String subPath = null;
+				Matcher zipMatcher = ZIP_PATTERN.matcher(path);
+				if (zipMatcher.matches()) {
+					path = zipMatcher.group(1);
+					subPath = zipMatcher.group(2);
+				}
+				return new OrchidMessageZipResource(this, resourceInfo, new URL(path).openStream(), subPath);
+			} else if ("text".equals(protocol)) {
+				return new OrchidMessageTextResource(resourceInfo, new URL(path).openStream());
+			} else if ("prop".equals(protocol)) {
+				return new OrchidMessagePropertyResource(resourceInfo, new URL(path).openStream());
+			}
+		}
+		throw new MalformedURLException("Invalid format: " + spec);
+	}
+
+	/**
+	 * @param name
+	 * @param fileInputStream
+	 * @return
+	 */
+	protected OrchidMessageResource createResourceFromName(String name, InputStream inputStream) {
+		OrchidMessageResourceInfo resourceInfo = createResourceInfo(name);
+
+		if ("properties".equals(resourceInfo.getExt())) {
+			return new OrchidMessagePropertyResource(resourceInfo, inputStream);
+		} else if ("zip".equals(resourceInfo.getExt())) {
+			return new OrchidMessageZipResource(this, resourceInfo, inputStream, null);
+		} else {
+			return new OrchidMessageTextResource(resourceInfo, inputStream);
+		}
+	}
+
+	/**
+	 * @param name
+	 * @param fileInputStream
+	 * @return
+	 */
+	protected OrchidMessageResourceInfo createResourceInfo(String name) {
+		Matcher matcher = FILE_PATTERN.matcher(name);
+		if (matcher.matches()) {
+			String code = matcher.group(1);
+			String localeCode = matcher.group(2).toLowerCase();
+			String ext = matcher.group(3);
+
+			Locale locale = Locale.getDefault();
+			Matcher localeMatcher = LOCALE_PATTERN.matcher(localeCode);
+			if (localeMatcher.matches()) {
+				locale = new Locale(localeMatcher.group(1), localeMatcher.group(2), localeMatcher.group(3));
+			}
+
+			return new OrchidMessageResourceInfo(code, localeCode, ext, locale);
+		}
+		return null;
 	}
 
 	/*
@@ -131,6 +187,7 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	protected OrchidMessageStorageCache<T> createMessageCache() {
 		OrchidMessageStorageCache<T> cache = new OrchidMessageStorageCache<T>();
 		cache.setMessageFactory(getMessageFactory());
+		cache.setPackageStartLevel(this.packageStartLevel);
 		return cache;
 	}
 
@@ -140,12 +197,11 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 * OrchidMessageStorageCachedProvider#getLastModified()
 	 */
 	@Override
-	protected long getLastModified() {
+	protected long getLastModified() throws IOException {
 		if (this.watchFile != null) {
-			return this.watchFile.getLastModified();
-		} else {
-			return 0;
+			return this.watchFile.openConnection().getLastModified();
 		}
+		return 0;
 	}
 
 	/*
@@ -159,171 +215,8 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	@Override
 	protected void loadAllMessages(OrchidMessageStorageCache<T> cache, List<String> pkg) throws IOException {
 		for (OrchidMessageResource dir : this.dirs) {
-			loadMessages(cache, pkg, dir);
+			dir.loadMessages(cache, pkg, this.messageFactory);
 		}
-	}
-
-	/**
-	 * Load all messages in the specified dir and sub dirs into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @param dir
-	 *            The dir to read
-	 * @throws IOException
-	 */
-	protected void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, OrchidMessageResource dir) throws IOException {
-		ArrayList<OrchidMessageResource> dirs = new ArrayList<OrchidMessageResource>();
-		OrchidMessageResource[] listFiles = dir.list();
-		if (listFiles != null) {
-			for (OrchidMessageResource file : listFiles) {
-				if (file.isFile()) {
-					loadMessagesFromFile(cache, pkgs, file);
-				} else if (file.isDirectory()) {
-					dirs.add(file);
-				}
-			}
-		}
-		for (OrchidMessageResource file : dirs) {
-			loadMessages(cache, createPackageList(pkgs, file.getName()), file);
-		}
-	}
-
-	/**
-	 * Create a new package list by copying the pkgs list and adding the code.
-	 * 
-	 * @param pkgs
-	 *            The current list to copy
-	 * @param code
-	 *            The code to add to the end of the list
-	 * @return The newly created list
-	 */
-	protected List<String> createPackageList(List<String> pkgs, String code) {
-		List<String> pkg = new ArrayList<String>(pkgs);
-		pkg.add(code);
-		return pkg;
-	}
-
-	/**
-	 * Load a message from the specified file into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @param file
-	 *            The file to read
-	 * @throws IOException
-	 */
-	protected void loadMessagesFromFile(OrchidMessageStorageCache<T> cache, List<String> pkgs, OrchidMessageResource file) throws IOException {
-		Matcher matcher = FILE_PATTERN.matcher(file.getName());
-		if (matcher.matches()) {
-			String code = matcher.group(1);
-			String localeCode = matcher.group(2).toLowerCase();
-			String ext = matcher.group(3);
-
-			Locale locale = Locale.getDefault();
-			Matcher localeMatcher = LOCALE_PATTERN.matcher(localeCode);
-			if (localeMatcher.matches()) {
-				locale = new Locale(localeMatcher.group(1), localeMatcher.group(2), localeMatcher.group(3));
-			}
-
-			if ("properties".equals(ext)) {
-				loadMessagesFromPropertyFile(cache, createPackageList(pkgs, code), file, localeCode, locale);
-			} else if ("zip".equals(ext)) {
-				loadMessagesFromZipFile(cache, createPackageList(pkgs, code), file, localeCode, locale);
-			} else {
-				String fileAsString = readFileAsString(file);
-				String c = formatCode(createPackageList(pkgs, code));
-				if (c != null) {
-					cache.addToCache(c, localeCode, this.messageFactory.createMessage(fileAsString, locale));
-				}
-			}
-		}
-	}
-
-	protected String formatCode(List<String> pkgs) {
-		StringBuilder b = new StringBuilder();
-		for (int i = this.packageStartLevel; i < pkgs.size(); i++) {
-			if (b.length() > 0) {
-				b.append('.');
-			}
-			b.append(pkgs.get(i));
-		}
-		if (b.length() > 0) {
-			return b.toString();
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Reads the specified file and returns its content as a string.
-	 * 
-	 * @param file
-	 *            The file to read
-	 * 
-	 * @return The read string
-	 * @throws IOException
-	 */
-	protected String readFileAsString(OrchidMessageResource file) throws IOException {
-
-		char[] buffer = new char[0x10000];
-		StringBuilder out = new StringBuilder();
-		InputStreamReader in = new InputStreamReader(file.getInputStream());
-		int read;
-		try {
-			do {
-				read = in.read(buffer, 0, buffer.length);
-				if (read > 0) {
-					out.append(buffer, 0, read);
-				}
-			} while (read >= 0);
-		} finally {
-			in.close();
-		}
-		return out.toString();
-	}
-
-	/**
-	 * Load all messages from the specified property file into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @param file
-	 *            The file to read
-	 * @param localeCode
-	 *            The locale to load the messages into
-	 * @throws IOException
-	 */
-	protected void loadMessagesFromPropertyFile(OrchidMessageStorageCache<T> cache, List<String> pkg, OrchidMessageResource file, String localeCode,
-	        Locale locale) throws IOException {
-		Properties props = new Properties();
-		InputStream in = file.getInputStream();
-		props.load(in);
-		in.close();
-		Set<Entry<Object, Object>> entrySet = props.entrySet();
-		for (Entry<Object, Object> entry : entrySet) {
-			String c = formatCode(createPackageList(pkg, (String) entry.getKey()));
-			if (c != null) {
-				cache.addToCache(c, localeCode, this.messageFactory.createMessage((String) entry.getValue(), locale));
-			}
-		}
-	}
-
-	/**
-	 * Load all messages from the specified zip file into the package.
-	 * 
-	 * @param pkg
-	 *            The prefix to add to the code
-	 * @param file
-	 *            The file to read
-	 * @param localeCode
-	 *            The locale to load the messages into
-	 * @throws IOException
-	 */
-	protected void loadMessagesFromZipFile(OrchidMessageStorageCache<T> cache, List<String> pkg, OrchidMessageResource file, String localeCode, Locale locale)
-	        throws IOException {
-		OrchidMessageZipResource zip = new OrchidMessageZipResource(file.getName(), file.getInputStream());
-		loadMessages(cache, pkg, zip);
 	}
 
 }

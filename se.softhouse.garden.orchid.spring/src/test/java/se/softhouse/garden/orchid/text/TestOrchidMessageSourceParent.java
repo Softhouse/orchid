@@ -18,7 +18,7 @@ public class TestOrchidMessageSourceParent {
 		ms.setBasename("test");
 		ms.setUseCodeAsDefaultMessage(true);
 		OrchidDirectoryMessageSource ms2 = new OrchidDirectoryMessageSource();
-		ms2.setDir("texttest/test");
+		ms2.setUrl("file:texttest/test");
 		ms2.setParentMessageSource(ms);
 		ms2.start();
 		Assert.assertEquals("parent1", ms2.getMessage("parent.1", (Object[]) null, Locale.getDefault()));

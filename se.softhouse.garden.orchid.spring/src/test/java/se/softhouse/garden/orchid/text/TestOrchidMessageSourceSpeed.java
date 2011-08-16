@@ -34,7 +34,7 @@ public class TestOrchidMessageSourceSpeed {
 	@Test
 	public void testOrchidDirectoryMessageSource() throws IOException {
 		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
-		ms.setDir("texttest/test");
+		ms.setUrl("file:texttest/test");
 		ms.setCacheSeconds(0);
 		ms.setUseCodeAsDefaultMessage(true);
 		ms.start();

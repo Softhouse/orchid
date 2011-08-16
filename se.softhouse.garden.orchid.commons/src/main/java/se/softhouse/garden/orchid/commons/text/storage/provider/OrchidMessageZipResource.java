@@ -1,83 +1,60 @@
 package se.softhouse.garden.orchid.commons.text.storage.provider;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class OrchidMessageZipResource implements OrchidMessageResource {
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
 
-	private final List<OrchidMessageZipEntryResource> entries;
-	private final String name;
+public class OrchidMessageZipResource extends OrchidMessageResource {
 
-	public OrchidMessageZipResource(String name, InputStream in) throws IOException {
-		this.name = name;
-		this.entries = new ArrayList<OrchidMessageZipEntryResource>();
-		unzip(in);
+	private final InputStream inputStream;
+	private final OrchidMessageDirectoryStorageProvider<?> provider;
+	private final String subPath;
+
+	/**
+	 * @param resourceInfo
+	 * @param inputStream
+	 * @param subPath
+	 */
+	public OrchidMessageZipResource(OrchidMessageDirectoryStorageProvider<?> provider, OrchidMessageResourceInfo resourceInfo, InputStream inputStream,
+	        String subPath) {
+		super(resourceInfo);
+		this.provider = provider;
+		this.inputStream = inputStream;
+		this.subPath = subPath;
 	}
 
-	private void unzip(InputStream in) throws IOException {
-		final int BUFFER = 2048;
-		ZipInputStream zis = new ZipInputStream(in);
-
+	/*
+	 * (non-Javadoc)
+	 * @see se.softhouse.garden.orchid.commons.text.storage.provider.
+	 * OrchidMessageResource
+	 * #loadMessages(se.softhouse.garden.orchid.commons.text
+	 * .storage.provider.OrchidMessageStorageCache, java.util.List,
+	 * se.softhouse.
+	 * garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache
+	 * .MessageFactory)
+	 */
+	@Override
+	public <T> void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, MessageFactory<T> messageFactory) throws IOException {
+		List<String> pkgs2 = createPackageList(pkgs, this.resourceInfo.getCode());
+		ZipInputStream zis = new ZipInputStream(this.inputStream);
 		ZipEntry entry;
+		int subPathLength = this.subPath == null ? 0 : this.subPath.length();
 		while ((entry = zis.getNextEntry()) != null) {
-			int count;
-			byte data[] = new byte[BUFFER];
-			ByteArrayOutputStream dest = new ByteArrayOutputStream();
-			while ((count = zis.read(data, 0, BUFFER)) != -1) {
-				dest.write(data, 0, count);
-			}
-			dest.close();
-			this.entries.add(new OrchidMessageZipEntryResource(this, entry, dest.toByteArray()));
-		}
-		zis.close();
-	}
-
-	@Override
-	public OrchidMessageResource[] list() {
-		return list(null);
-	}
-
-	protected OrchidMessageResource[] list(String path) {
-		ArrayList<OrchidMessageResource> resources = new ArrayList<OrchidMessageResource>();
-		File filePath = path == null ? null : new File(path);
-		for (OrchidMessageZipEntryResource entry : this.entries) {
-			File parentFile = new File(entry.getEntry().getName()).getParentFile();
-			if (filePath == parentFile || filePath != null && filePath.equals(parentFile)) {
-				resources.add(entry);
+			if (!entry.isDirectory()) {
+				if (this.subPath == null || entry.getName().startsWith(this.subPath)) {
+					File file = new File(entry.getName());
+					String path = file.getParent();
+					path = path == null || path.length() <= subPathLength ? null : file.getParent().substring(subPathLength);
+					OrchidMessageResource resource = this.provider.createResourceFromName(file.getName(), zis);
+					resource.loadMessages(cache, createPackageList(pkgs2, path, "/"), messageFactory);
+				}
 			}
 		}
-		return resources.toArray(new OrchidMessageResource[resources.size()]);
-	}
-
-	@Override
-	public boolean isFile() {
-		return false;
-	}
-
-	@Override
-	public boolean isDirectory() {
-		return true;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public InputStream getInputStream() throws IOException {
-		return null;
-	}
-
-	@Override
-	public long getLastModified() {
-		return 0;
 	}
 
 }

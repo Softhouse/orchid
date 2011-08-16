@@ -45,6 +45,7 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 
 	protected int cacheMillis = -1;
 	protected String charsetName = "UTF-8";
+	protected int packageStartLevel = 1;
 
 	/**
 	 * The constructor which creates an empty cache
@@ -97,6 +98,17 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 	 */
 	public int getCacheSeconds() {
 		return this.cacheMillis / 1000;
+	}
+
+	/**
+	 * Set the package level to skip in packages when mapping directories to
+	 * message keys, eg. the path a/b/c/d.txt will be mapped to a.b.c.d with
+	 * level=0 and c.d with level=2. All files will be read in the directory
+	 * structure but if the level is to high so that the key will be empty, it
+	 * will not be used.
+	 */
+	public void setPackageStartLevel(int packageStartLevel) {
+		this.packageStartLevel = packageStartLevel;
 	}
 
 	/**
@@ -211,7 +223,7 @@ public abstract class OrchidMessageStorageCachedProvider<T> extends OrchidMessag
 	/**
 	 * Return the timestamp when the storage was last updated
 	 */
-	protected abstract long getLastModified();
+	protected abstract long getLastModified() throws IOException;
 
 	/**
 	 * Load all messages from the store into the package.

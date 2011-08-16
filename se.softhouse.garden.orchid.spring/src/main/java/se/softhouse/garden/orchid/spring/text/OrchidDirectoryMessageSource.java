@@ -18,9 +18,12 @@
  */
 package se.softhouse.garden.orchid.spring.text;
 
+import java.io.IOException;
+
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
 import se.softhouse.garden.orchid.commons.text.storage.OrchidMessageFormatStorage;
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageDirectoryStorageProvider;
+import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCachedProvider;
 
 /**
  * This is a MessageSource which uses a {@link OrchidMessageFormatStorage} to
@@ -39,24 +42,30 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 
 	/**
 	 * Sets the path to the directory to read messages from
+	 * 
+	 * @throws IOException
 	 */
-	public void setDir(String dir) {
-		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setDir(dir);
+	public void setUrl(String spec) throws IOException {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setUrl(spec);
 	}
 
 	/**
 	 * Sets the path to the directory to read messages from
+	 * 
+	 * @throws IOException
 	 */
-	public void setDirs(String[] dirs) {
-		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setDirs(dirs);
+	public void setUrls(String[] specs) throws IOException {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setUrls(specs);
 	}
 
 	/**
 	 * Sets the path to the watch file/directory check if the cache shall be
 	 * reread.
+	 * 
+	 * @throws IOException
 	 */
-	public void setWatch(String watchFile) {
-		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setWatchFile(watchFile);
+	public void setWatchURL(String spec) throws IOException {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setWatchUrl(spec);
 	}
 
 	/**
@@ -66,7 +75,7 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 	 *            The time in seconds
 	 */
 	public void setCacheSeconds(int cacheSeconds) {
-		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCacheSeconds(cacheSeconds);
+		((OrchidMessageStorageCachedProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCacheSeconds(cacheSeconds);
 	}
 
 	/**
@@ -76,7 +85,7 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 	 *            The name of the {@linkplain java.nio.charset.Charset charset}.
 	 */
 	public void setCharsetName(String charsetName) {
-		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCharsetName(charsetName);
+		((OrchidMessageStorageCachedProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setCharsetName(charsetName);
 	}
 
 	/**
