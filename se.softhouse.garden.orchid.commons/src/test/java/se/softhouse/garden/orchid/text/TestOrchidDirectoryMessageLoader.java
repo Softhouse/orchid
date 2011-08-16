@@ -57,8 +57,8 @@ public class TestOrchidDirectoryMessageLoader {
 	@Test
 	public void testZipGetMessage() throws IOException {
 		OrchidMessageStorageCachedProvider<String> provider = new OrchidMessageDirectoryStorageProvider<String>(
-		        "zip:https://nodeload.github.com/Softhouse/orchid/zipball/master");
-		provider.setPackageStartLevel(4);
+		        "zip:https://nodeload.github.com/Softhouse/orchid/zipball/master!~Softhouse-orchid-[^/.]*/se.softhouse.garden.orchid.commons/texttest");
+		provider.setPackageStartLevel(1);
 		OrchidStringMessageStorage dml = new OrchidStringMessageStorage(provider);
 		dml.start();
 		Assert.assertEquals("FileTest message", dml.getMessage("bundle1.msg.0"));
