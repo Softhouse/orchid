@@ -37,8 +37,8 @@ public class OrchidMessageTextResource extends OrchidMessageResource {
 	 * @param resourceInfo
 	 * @param openStream
 	 */
-	public OrchidMessageTextResource(OrchidMessageResourceInfo resourceInfo, InputStream inputStream) {
-		super(resourceInfo);
+	public OrchidMessageTextResource(OrchidMessageResourceInfo resourceInfo, String charsetName, InputStream inputStream) {
+		super(resourceInfo, charsetName);
 		this.inputStream = inputStream;
 	}
 
@@ -53,7 +53,7 @@ public class OrchidMessageTextResource extends OrchidMessageResource {
 	public <T> void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, MessageFactory<T> messageFactory) throws IOException {
 		char[] buffer = new char[0x10000];
 		StringBuilder out = new StringBuilder();
-		InputStreamReader in = new InputStreamReader(this.inputStream);
+		InputStreamReader in = new InputStreamReader(this.inputStream, this.charsetName);
 		int read;
 		do {
 			read = in.read(buffer, 0, buffer.length);

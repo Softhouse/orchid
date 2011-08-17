@@ -120,7 +120,7 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 			OrchidMessageResourceInfo resourceInfo = createResourceInfo(file.getName());
 
 			if ("file".equals(protocol) && file.isDirectory()) {
-				return new OrchidMessageDirResource(this, resourceInfo, file);
+				return new OrchidMessageDirResource(this, resourceInfo, this.charsetName, file);
 			} else if ("zip".equals(protocol)) {
 				String subPath = null;
 				Matcher zipMatcher = ZIP_PATTERN.matcher(path);
@@ -128,11 +128,11 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 					path = zipMatcher.group(1);
 					subPath = zipMatcher.group(2);
 				}
-				return new OrchidMessageZipResource(this, resourceInfo, new URL(path).openStream(), subPath);
+				return new OrchidMessageZipResource(this, resourceInfo, this.charsetName, new URL(path).openStream(), subPath);
 			} else if ("text".equals(protocol)) {
-				return new OrchidMessageTextResource(resourceInfo, new URL(path).openStream());
+				return new OrchidMessageTextResource(resourceInfo, this.charsetName, new URL(path).openStream());
 			} else if ("prop".equals(protocol)) {
-				return new OrchidMessagePropertyResource(resourceInfo, new URL(path).openStream());
+				return new OrchidMessagePropertyResource(resourceInfo, this.charsetName, new URL(path).openStream());
 			}
 		}
 		throw new MalformedURLException("Invalid format: " + spec);
@@ -147,11 +147,11 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 		OrchidMessageResourceInfo resourceInfo = createResourceInfo(name);
 
 		if ("properties".equals(resourceInfo.getExt())) {
-			return new OrchidMessagePropertyResource(resourceInfo, inputStream);
+			return new OrchidMessagePropertyResource(resourceInfo, this.charsetName, inputStream);
 		} else if ("zip".equals(resourceInfo.getExt())) {
-			return new OrchidMessageZipResource(this, resourceInfo, inputStream, null);
+			return new OrchidMessageZipResource(this, resourceInfo, this.charsetName, inputStream, null);
 		} else {
-			return new OrchidMessageTextResource(resourceInfo, inputStream);
+			return new OrchidMessageTextResource(resourceInfo, this.charsetName, inputStream);
 		}
 	}
 

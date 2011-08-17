@@ -89,4 +89,16 @@ public class TestOrchidDirectoryMessageSource {
 		Assert.assertEquals("Message with an embedded message Embedded Wille",
 		        ms.getMessage("embedded.20", new Object[] { arg(TestArguments.NAME, "Wille") }, Locale.getDefault()));
 	}
+
+	@Test
+	public void testCharset() throws IOException {
+		OrchidDirectoryMessageSource ms = new OrchidDirectoryMessageSource();
+		ms.setCharsetName("UTF-8");
+		ms.setUrl("file:texttest/test/charset");
+		ms.start();
+		String s = "\u0142\u0105\u017C\u0119\u0107\u0144\u015B\u017A\u0141\u0104\u017B\u0118\u0106\u0143\u015A\u0179";
+		Assert.assertEquals(s, ms.getMessage(code("text1"), Locale.getDefault()));
+		Assert.assertEquals(s, ms.getMessage(code("test2.text1"), Locale.getDefault()));
+		Assert.assertEquals(s, ms.getMessage(code("test1.text1"), Locale.getDefault()));
+	}
 }

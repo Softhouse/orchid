@@ -2,6 +2,7 @@ package se.softhouse.garden.orchid.commons.text.storage.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -17,8 +18,8 @@ public class OrchidMessagePropertyResource extends OrchidMessageResource {
 	 * @param resourceInfo
 	 * @param openStream
 	 */
-	public OrchidMessagePropertyResource(OrchidMessageResourceInfo resourceInfo, InputStream inputStream) {
-		super(resourceInfo);
+	public OrchidMessagePropertyResource(OrchidMessageResourceInfo resourceInfo, String charsetName, InputStream inputStream) {
+		super(resourceInfo, charsetName);
 		this.inputStream = inputStream;
 	}
 
@@ -35,7 +36,7 @@ public class OrchidMessagePropertyResource extends OrchidMessageResource {
 	@Override
 	public <T> void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, MessageFactory<T> messageFactory) throws IOException {
 		Properties props = new Properties();
-		props.load(this.inputStream);
+		props.load(new InputStreamReader(this.inputStream, this.charsetName));
 		Set<Entry<Object, Object>> entrySet = props.entrySet();
 		List<String> pkgs2 = createPackageList(pkgs, this.resourceInfo.getCode());
 		for (Entry<Object, Object> entry : entrySet) {

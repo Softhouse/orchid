@@ -9,9 +9,11 @@ import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageSto
 public abstract class OrchidMessageResource {
 
 	protected final OrchidMessageResourceInfo resourceInfo;
+	protected final String charsetName;
 
-	public OrchidMessageResource(OrchidMessageResourceInfo resourceInfo) {
+	public OrchidMessageResource(OrchidMessageResourceInfo resourceInfo, String charsetName) {
 		this.resourceInfo = resourceInfo;
+		this.charsetName = charsetName;
 	}
 
 	/**

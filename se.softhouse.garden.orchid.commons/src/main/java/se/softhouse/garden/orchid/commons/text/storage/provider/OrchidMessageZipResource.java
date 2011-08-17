@@ -23,9 +23,9 @@ public class OrchidMessageZipResource extends OrchidMessageResource {
 	 * @param inputStream
 	 * @param subPath
 	 */
-	public OrchidMessageZipResource(OrchidMessageDirectoryStorageProvider<?> provider, OrchidMessageResourceInfo resourceInfo, InputStream inputStream,
-	        String subPath) {
-		super(resourceInfo);
+	public OrchidMessageZipResource(OrchidMessageDirectoryStorageProvider<?> provider, OrchidMessageResourceInfo resourceInfo, String charsetName,
+	        InputStream inputStream, String subPath) {
+		super(resourceInfo, charsetName);
 		this.provider = provider;
 		this.inputStream = inputStream;
 		if (subPath != null && subPath.startsWith("~")) {

@@ -64,7 +64,7 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 	 * 
 	 * @throws IOException
 	 */
-	public void setWatchURL(String spec) throws IOException {
+	public void setWatchUrl(String spec) throws IOException {
 		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setWatchUrl(spec);
 	}
 

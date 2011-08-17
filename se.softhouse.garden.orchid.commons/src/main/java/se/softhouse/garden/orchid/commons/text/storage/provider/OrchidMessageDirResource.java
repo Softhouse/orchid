@@ -14,8 +14,8 @@ public class OrchidMessageDirResource extends OrchidMessageResource {
 	OrchidMessageDirectoryStorageProvider<?> provider;
 	File file;
 
-	public OrchidMessageDirResource(OrchidMessageDirectoryStorageProvider<?> provider, OrchidMessageResourceInfo resourceInfo, File file) {
-		super(resourceInfo);
+	public OrchidMessageDirResource(OrchidMessageDirectoryStorageProvider<?> provider, OrchidMessageResourceInfo resourceInfo, String charsetName, File file) {
+		super(resourceInfo, charsetName);
 		this.provider = provider;
 		this.file = file;
 	}

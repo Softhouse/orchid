@@ -18,6 +18,7 @@
  */
 package se.softhouse.garden.orchid.spring.text;
 
+import se.softhouse.garden.orchid.commons.text.OrchidDefaultMessageCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageCode;
 
@@ -40,6 +41,18 @@ public abstract class OrchidMessageSource extends OrchidMessage {
 	 */
 	public static OrchidMessageSourceBuilder code(OrchidMessageCode code) {
 		return new OrchidMessageSourceBuilder(code);
+	}
+
+	/**
+	 * Creates an instance with the specified code.
+	 * 
+	 * @param code
+	 *            The name of the message specified as a code
+	 * 
+	 * @return The created {@link OrchidMessageSourceBuilder}
+	 */
+	public static OrchidMessageSourceBuilder code(String code) {
+		return new OrchidMessageSourceBuilder(new OrchidDefaultMessageCode(code));
 	}
 
 }
