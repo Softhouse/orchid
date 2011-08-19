@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2011, Mikael Svahn, Softhouse Consulting AB
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so:
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package se.softhouse.garden.orchid.commons.text.storage.provider;
 
 import java.io.File;
@@ -11,6 +29,12 @@ import java.util.zip.ZipInputStream;
 
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
 
+/**
+ * A Resource that will load files from the zip file and its sub directories.
+ * 
+ * @author Mikael Svahn
+ * 
+ */
 public class OrchidMessageZipResource extends OrchidMessageResource {
 
 	private final InputStream inputStream;
@@ -75,7 +99,10 @@ public class OrchidMessageZipResource extends OrchidMessageResource {
 		}
 	}
 
-	private <T> void loadResource(OrchidMessageStorageCache<T> cache, MessageFactory<T> messageFactory, List<String> pkgs2, ZipInputStream zis, File file,
+	/**
+	 * Load messages from a zip file
+	 */
+	protected <T> void loadResource(OrchidMessageStorageCache<T> cache, MessageFactory<T> messageFactory, List<String> pkgs2, ZipInputStream zis, File file,
 	        String path) throws IOException {
 		OrchidMessageResource resource = this.provider.createResourceFromName(file.getName(), zis);
 		resource.loadMessages(cache, createPackageList(pkgs2, path, "/"), messageFactory);

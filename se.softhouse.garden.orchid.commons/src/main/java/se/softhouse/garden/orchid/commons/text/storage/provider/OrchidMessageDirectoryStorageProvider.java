@@ -29,17 +29,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * An abstract message loader that loads strings from bare files in a directory
- * structure. The exact type that is returned is defined in the subclasses.
+ * A storage provider that loads strings from bare files in directory
+ * structures, zip files or property files.
  * 
  * The file names have the following format
  * key_[language]_[country]_[variant].[ext]
  * 
  * If the [ext] equals properties the files is read as a property and insert
  * into the property tree. Note that the location and name of the property file
- * will be inserted into the message key.
+ * will be inserted into the message key. This is the same for zip files.
  * 
- * The getMessage operations returns the found content or if a none leaf node is
+ * The getMessage operations returns the found content or if a non leaf node is
  * queried the children of that node is returned.
  * 
  * The content of the directory will be reread when the watch file have been
@@ -78,7 +78,17 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	}
 
 	/**
-	 * Sets the path to the directory to read messages from
+	 * Sets the path to the URL to read messages from. The URL might have the
+	 * following protocols: <br>
+	 * - file: The URL points to a directory. <br>
+	 * - zip: The URL points to a zip file. <br>
+	 * - text: The URL points to a text file containing one propery.<br>
+	 * - prop: The URL points to a property file. <br>
+	 * <br>
+	 * Example: <br>
+	 * file://somedir/lalal <br>
+	 * zip:http://host.se/lalal.zip <br>
+	 * prop:file:///lalal.properties <br>
 	 * 
 	 * @throws IOException
 	 */
@@ -87,7 +97,8 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	}
 
 	/**
-	 * Sets the paths to the directories to read messages from
+	 * Sets the URLss to read messages from. See {@link #setUrl(String)} for URL
+	 * syntax.
 	 * 
 	 * @throws IOException
 	 */
@@ -109,8 +120,8 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	}
 
 	/**
+	 * Creates a {@link OrchidMessageResource} from the specified spec
 	 */
-
 	protected OrchidMessageResource createResourceFromSpec(String spec) throws IOException {
 		Matcher matcher = URL_PATTERN.matcher(spec);
 		if (matcher.matches()) {
@@ -139,9 +150,14 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	}
 
 	/**
+	 * Creates a {@link OrchidMessageResource} from the extension of the
+	 * specified name.
+	 * 
 	 * @param name
-	 * @param fileInputStream
-	 * @return
+	 *            The name of the file
+	 * @param inputStream
+	 *            The stream to read from
+	 * @return The created resource
 	 */
 	protected OrchidMessageResource createResourceFromName(String name, InputStream inputStream) {
 		OrchidMessageResourceInfo resourceInfo = createResourceInfo(name);
@@ -156,9 +172,12 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	}
 
 	/**
+	 * Creates a {@link OrchidMessageResourceInfo} from the specified file name.
+	 * 
 	 * @param name
-	 * @param fileInputStream
-	 * @return
+	 *            The name to parse
+	 * 
+	 * @return The parsed {@link OrchidMessageResourceInfo}
 	 */
 	protected OrchidMessageResourceInfo createResourceInfo(String name) {
 		Matcher matcher = FILE_PATTERN.matcher(name);

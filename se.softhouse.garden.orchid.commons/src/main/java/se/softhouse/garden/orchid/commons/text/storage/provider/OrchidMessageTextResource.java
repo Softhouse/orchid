@@ -26,6 +26,8 @@ import java.util.List;
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
 
 /**
+ * A resource that loads a message from the content of a text file
+ * 
  * @author Mikael Svahn
  * 
  */

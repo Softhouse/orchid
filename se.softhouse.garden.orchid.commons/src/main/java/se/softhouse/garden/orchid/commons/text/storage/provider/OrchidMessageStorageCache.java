@@ -213,6 +213,15 @@ public class OrchidMessageStorageCache<T> {
 		return result;
 	}
 
+	/**
+	 * Creates a code key from the list of packages by separating them with a
+	 * dot.
+	 * 
+	 * @param pkgs
+	 *            The list of packages
+	 * 
+	 * @return A dot separated string of the list
+	 */
 	protected String formatCode(List<String> pkgs) {
 		StringBuilder b = new StringBuilder();
 		for (int i = this.packageStartLevel; i < pkgs.size(); i++) {

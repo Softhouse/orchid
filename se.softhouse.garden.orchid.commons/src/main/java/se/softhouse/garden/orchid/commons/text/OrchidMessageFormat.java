@@ -271,9 +271,8 @@ public class OrchidMessageFormat extends MessageFormat {
 	protected Object resolveFunction(String function, String value) {
 		if (this.functionResolver != null) {
 			return this.functionResolver.resolveFunction(function, value, this.orchidMessageFormatLookup);
-		} else {
-			return new OrchidMessageFormatFunctionExecutor(function, value, null);
 		}
+		return new OrchidMessageFormatFunctionExecutor(function, value, null);
 	}
 
 	/**

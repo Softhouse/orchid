@@ -104,13 +104,12 @@ public class OrchidMessageFormatFunctionExecutor {
 				}
 			}
 			return "{" + this.value + "}";
-		} else {
-			OrchidMessageFormatFunction func = (OrchidMessageFormatFunction) args.getArgs().get(OrchidMessageFormatFunction.ORCHID_FUNC + this.function);
-			if (func != null) {
-				return func.execute(this, args, locale);
-			}
-			return "{" + this.function + ":" + this.value + "}";
 		}
+		OrchidMessageFormatFunction func = (OrchidMessageFormatFunction) args.getArgs().get(OrchidMessageFormatFunction.ORCHID_FUNC + this.function);
+		if (func != null) {
+			return func.execute(this, args, locale);
+		}
+		return "{" + this.function + ":" + this.value + "}";
 	}
 
 }
