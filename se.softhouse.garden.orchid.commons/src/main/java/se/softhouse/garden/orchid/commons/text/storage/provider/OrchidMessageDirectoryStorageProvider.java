@@ -233,8 +233,10 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	@Override
 	protected void loadAllMessages(OrchidMessageStorageCache<T> cache, List<String> pkg) throws IOException {
-		for (OrchidMessageResource dir : this.dirs) {
-			dir.loadMessages(cache, pkg, this.messageFactory);
+		if (this.dirs != null) {
+			for (OrchidMessageResource dir : this.dirs) {
+				dir.loadMessages(cache, pkg, this.messageFactory);
+			}
 		}
 	}
 

@@ -12,6 +12,9 @@
 		<p>
 			<orchid:message code="page.${pageId}.body" htmlEscape="false" />
 		</p>
+		<p>
+			<c:out value="Name: ${sessionScope['scopedTarget.sessionBeanImpl'].name}"></c:out>
+		</p>
 	</div>
 
 
