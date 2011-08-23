@@ -20,6 +20,16 @@
 					<orchid:arg name="content" value="Lalalalala" />
 				</orchid:message>
 			</p>
+			<p>
+			---
+			<br/>
+				<c:out value="${sessionBean.id}"></c:out>
+			<br/>
+			---
+				<c:out value="${sessionBean.name}"></c:out>
+			<br/>
+			---
+			</p>
 		</div>
 	</div>
 

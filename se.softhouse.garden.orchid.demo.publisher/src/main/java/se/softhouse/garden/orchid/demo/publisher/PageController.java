@@ -31,7 +31,6 @@ public class PageController {
 		logger.debug("Accessing /page/" + pageId);
 		String view = this.messageSource.getMessage("page." + pageId + ".view", null, locale);
 		if (view != null) {
-			System.out.println(this.sessionBean);
 			this.sessionBean.setName(name);
 			model.addAttribute("pageId", pageId);
 			return view;

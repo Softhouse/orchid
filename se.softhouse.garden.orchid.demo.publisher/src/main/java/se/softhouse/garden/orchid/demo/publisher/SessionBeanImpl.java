@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @author mis
  * 
  */
-@Component
+@Component("sessionBean")
 @Scope(value = "session")
 public class SessionBeanImpl implements SessionBean {
 
@@ -26,16 +26,27 @@ public class SessionBeanImpl implements SessionBean {
 	/**
 	 * @return the name
 	 */
-	public String getName() {
-		return this.name;
+	@Override
+	public String getId() {
+		return this.toString();
 	}
 
 	/**
 	 * @param name
 	 *            the name to set
 	 */
+	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see se.softhouse.garden.orchid.demo.publisher.SessionBean#getName()
+	 */
+	@Override
+	public String getName() {
+		return this.name;
 	}
 
 }

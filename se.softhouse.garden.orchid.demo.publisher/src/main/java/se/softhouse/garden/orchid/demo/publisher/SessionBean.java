@@ -9,6 +9,8 @@ package se.softhouse.garden.orchid.demo.publisher;
  */
 public interface SessionBean {
 
+	String getId();
+
 	/**
 	 * @param name
 	 */
