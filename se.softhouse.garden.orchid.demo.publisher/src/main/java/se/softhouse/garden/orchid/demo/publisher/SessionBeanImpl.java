@@ -3,6 +3,8 @@
  */
 package se.softhouse.garden.orchid.demo.publisher;
 
+import java.io.Serializable;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +14,9 @@ import org.springframework.stereotype.Component;
  */
 @Component("sessionBean")
 @Scope(value = "session")
-public class SessionBeanImpl implements SessionBean {
+public class SessionBeanImpl implements SessionBean, Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private String name;
 
 	/**
