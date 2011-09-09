@@ -21,6 +21,7 @@ package se.softhouse.garden.orchid.commons.text.storage.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
@@ -53,9 +54,14 @@ public class OrchidMessageTextResource extends OrchidMessageResource {
 	 */
 	@Override
 	public <T> void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, MessageFactory<T> messageFactory) throws IOException {
+		String out = readFromStream(this.inputStream, this.charsetName);
+		addToCache(cache, pkgs, messageFactory, this.resourceInfo.getCode(), out);
+	}
+
+	public static String readFromStream(InputStream inputStream, String charsetName) throws UnsupportedEncodingException, IOException {
 		char[] buffer = new char[0x10000];
 		StringBuilder out = new StringBuilder();
-		InputStreamReader in = new InputStreamReader(this.inputStream, this.charsetName);
+		InputStreamReader in = new InputStreamReader(inputStream, charsetName);
 		int read;
 		do {
 			read = in.read(buffer, 0, buffer.length);
@@ -63,6 +69,6 @@ public class OrchidMessageTextResource extends OrchidMessageResource {
 				out.append(buffer, 0, read);
 			}
 		} while (read >= 0);
-		addToCache(cache, pkgs, messageFactory, this.resourceInfo.getCode(), out.toString());
+		return out.toString();
 	}
 }

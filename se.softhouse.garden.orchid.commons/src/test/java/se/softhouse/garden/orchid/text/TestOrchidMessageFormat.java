@@ -69,7 +69,7 @@ public class TestOrchidMessageFormat {
 		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", func("test", new TestFunction())));
 	}
 
-	public enum TestMessages implements OrchidMessageCode {
+	public static enum TestMessages implements OrchidMessageCode {
 		MSG0("Test message"), //
 		MSG1("Test message {id}"), //
 		MSG2("Test message {id,number,000} with name {name}"), //

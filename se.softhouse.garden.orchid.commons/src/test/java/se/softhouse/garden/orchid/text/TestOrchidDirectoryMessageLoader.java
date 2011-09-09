@@ -131,6 +131,7 @@ public class TestOrchidDirectoryMessageLoader {
 		OrchidStringMessageStorage dml = new OrchidStringMessageStorage(provider);
 		provider.setCacheMillis(500);
 		File root = new File("texttest");
+		File watchfile = new File("texttest/watchfile");
 		File file1 = new File("texttest/bundle1/thread/1.txt");
 		File file2 = new File("texttest/bundle1/thread/2.txt");
 		file1.delete();
@@ -152,7 +153,21 @@ public class TestOrchidDirectoryMessageLoader {
 		Thread.sleep(1000);
 		Assert.assertEquals("Test1C", dml.getMessage("bundle1.thread.1"));
 		Assert.assertEquals("Test2B", dml.getMessage("bundle1.thread.2"));
-
+		writeFileContent("A", watchfile);
+		provider.setWatchUrl("file:texttest/watchfile");
+		provider.setWatchContent(true);
+		writeFileContent("Test1D", file1);
+		Thread.sleep(1000);
+		Assert.assertEquals("Test1D", dml.getMessage("bundle1.thread.1"));
+		Assert.assertEquals("Test2B", dml.getMessage("bundle1.thread.2"));
+		writeFileContent("Test1E", file1);
+		Thread.sleep(1000);
+		Assert.assertEquals("Test1D", dml.getMessage("bundle1.thread.1"));
+		Assert.assertEquals("Test2B", dml.getMessage("bundle1.thread.2"));
+		writeFileContent("B", watchfile);
+		Thread.sleep(1000);
+		Assert.assertEquals("Test1E", dml.getMessage("bundle1.thread.1"));
+		Assert.assertEquals("Test2B", dml.getMessage("bundle1.thread.2"));
 	}
 
 	@Test

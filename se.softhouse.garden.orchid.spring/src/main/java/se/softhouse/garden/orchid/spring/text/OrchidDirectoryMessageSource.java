@@ -69,6 +69,16 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 	}
 
 	/**
+	 * Set weather to watch the time stamp of the URL or the content of the URL.
+	 * 
+	 * @param watchContent
+	 *            true if the content of the URL should be watched
+	 */
+	public void setWatchContent(boolean watchContent) {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setWatchContent(watchContent);
+	}
+
+	/**
 	 * Sets the time for how often the watch file/dir shall be checked.
 	 * 
 	 * @param cacheSeconds

@@ -58,7 +58,10 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	protected static final Pattern ZIP_PATTERN = Pattern.compile("([^!]*)!(.+)");
 
 	protected OrchidMessageResource[] dirs;
-	protected URL watchFile;
+	protected URL watchUrl;
+	protected boolean watchContent;
+	protected String content;
+	protected long contentModified;
 
 	/**
 	 * The constructor which creates an empty cache
@@ -116,7 +119,17 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 * @throws IOException
 	 */
 	public void setWatchUrl(String spec) throws IOException {
-		this.watchFile = new URL(spec);
+		this.watchUrl = new URL(spec);
+	}
+
+	/**
+	 * Set weather to watch the time stamp of the URL or the content of the URL.
+	 * 
+	 * @param watchContent
+	 *            true if the content of the URL should be watched
+	 */
+	public void setWatchContent(boolean watchContent) {
+		this.watchContent = watchContent;
 	}
 
 	/**
@@ -217,8 +230,16 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	@Override
 	protected long getLastModified() throws IOException {
-		if (this.watchFile != null) {
-			return this.watchFile.openConnection().getLastModified();
+		if (this.watchUrl != null) {
+			if (!this.watchContent) {
+				return this.watchUrl.openConnection().getLastModified();
+			}
+			String content = OrchidMessageTextResource.readFromStream(this.watchUrl.openStream(), this.charsetName);
+			if (content.equals(this.content) == false) {
+				this.content = content;
+				this.contentModified = System.currentTimeMillis();
+			}
+			return this.contentModified;
 		}
 		return 0;
 	}
