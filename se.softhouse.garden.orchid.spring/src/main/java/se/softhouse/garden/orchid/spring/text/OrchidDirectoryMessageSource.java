@@ -109,4 +109,8 @@ public class OrchidDirectoryMessageSource extends OrchidAbstractMessageSource {
 		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).setPackageStartLevel(packageStartLevel);
 	}
 
+	public void reload() throws IOException {
+		((OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>) this.messageLoader.getProvider()).reload(true);
+	}
+
 }

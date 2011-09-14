@@ -57,7 +57,7 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	protected static final Pattern LOCALE_PATTERN = Pattern.compile("([^_.]*)_?([^.]*)_?([^.]*)");
 	protected static final Pattern ZIP_PATTERN = Pattern.compile("([^!]*)!(.+)");
 
-	protected OrchidMessageResource[] dirs;
+	protected String[] urls;
 	protected URL watchUrl;
 	protected boolean watchContent;
 	protected String content;
@@ -77,7 +77,7 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	public OrchidMessageDirectoryStorageProvider(String spec) throws IOException {
 		this();
-		this.dirs = new OrchidMessageResource[] { createResourceFromSpec(spec) };
+		this.urls = new String[] { spec };
 	}
 
 	/**
@@ -105,11 +105,8 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 * 
 	 * @throws IOException
 	 */
-	public void setUrls(String[] dirs) throws IOException {
-		this.dirs = new OrchidMessageResource[dirs.length];
-		for (int i = 0; i < dirs.length; i++) {
-			this.dirs[i] = createResourceFromSpec(dirs[i]);
-		}
+	public void setUrls(String[] urls) throws IOException {
+		this.urls = urls;
 	}
 
 	/**
@@ -254,9 +251,10 @@ public class OrchidMessageDirectoryStorageProvider<T> extends OrchidMessageStora
 	 */
 	@Override
 	protected void loadAllMessages(OrchidMessageStorageCache<T> cache, List<String> pkg) throws IOException {
-		if (this.dirs != null) {
-			for (OrchidMessageResource dir : this.dirs) {
-				dir.loadMessages(cache, pkg, this.messageFactory);
+		if (this.urls != null) {
+			for (String spec : this.urls) {
+				OrchidMessageResource resource = createResourceFromSpec(spec);
+				resource.loadMessages(cache, pkg, this.messageFactory);
 			}
 		}
 	}
