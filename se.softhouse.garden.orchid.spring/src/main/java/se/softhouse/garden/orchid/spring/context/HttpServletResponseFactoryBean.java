@@ -16,36 +16,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.spring.text;
 
-import java.util.Locale;
+package se.softhouse.garden.orchid.spring.context;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunctionExecutor;
-import se.softhouse.garden.orchid.spring.utils.LinkUtil;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This function formats a link accodring to the current context
- * 
- * @author mis
+ * @author Mikael Svahn
  * 
  */
-public class OrchidMessageFormatLinkFunction implements OrchidMessageFormatFunction {
+public class HttpServletResponseFactoryBean implements FactoryBean<HttpServletResponse> {
+	@Autowired
+	ResponseInScopeFilter responseInScopeFilter;
 
-	private final HttpServletRequest request;
-	private final HttpServletResponse response;
-
-	public OrchidMessageFormatLinkFunction(HttpServletRequest request, HttpServletResponse response) {
-		this.request = request;
-		this.response = response;
+	@Override
+	public HttpServletResponse getObject() throws Exception {
+		return this.responseInScopeFilter.getHttpServletResponse();
 	}
 
 	@Override
-	public Object execute(OrchidMessageFormatFunctionExecutor executor, OrchidMessageArguments args, Locale locale) {
-		return LinkUtil.createUrl(executor.getValue(), this.request, this.response);
+	public Class<HttpServletResponse> getObjectType() {
+		return HttpServletResponse.class;
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return false;
 	}
 }
