@@ -36,8 +36,8 @@
 	<bean class="se.softhouse.garden.orchid.spring.text.OrchidReloadableResourceBundleMessageSource" id="parentMessageSource"
 		p:basenames="file://${orchid.demo.home}/properties/application,WEB-INF/i18n/messages,WEB-INF/i18n/application" p:fallbackToSystemLocale="false"
 		p:useCodeAsDefaultMessage="true" />
-	<bean class="se.softhouse.garden.orchid.spring.text.OrchidDirectoryMessageSource" id="messageSource" p:url="file:${orchid.demo.home}/messages"
-		p:parentMessageSource-ref="parentMessageSource" p:cacheSeconds="1" />
+	<bean class="se.softhouse.garden.orchid.spring.text.OrchidDirectoryMessageSource" id="messageSource" p:urls="file:${orchid.demo.home}/messages,file:${orchid.demo.home}/messages2"
+		p:parentMessageSource-ref="parentMessageSource" p:cacheSeconds="1" p:watchUrl="file:${orchid.demo.home}/messages.watch" />
 
 	<!-- store preferred language configuration in a cookie -->
 	<bean class="org.springframework.web.servlet.i18n.CookieLocaleResolver" id="localeResolver" p:cookieName="locale" />
