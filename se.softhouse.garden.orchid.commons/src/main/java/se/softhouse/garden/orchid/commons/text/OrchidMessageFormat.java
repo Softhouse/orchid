@@ -190,7 +190,7 @@ public class OrchidMessageFormat extends MessageFormat {
 	 */
 	@Override
 	public void applyPattern(String pattern) {
-		if (pattern != null && pattern.length() > 0) {
+		if (pattern != null) {
 			super.applyPattern(parseEnhancedPattern(pattern));
 		}
 	}
@@ -227,6 +227,7 @@ public class OrchidMessageFormat extends MessageFormat {
 			if (!inArg) {
 				if (ch == '\'') {
 					if (i + 1 < pattern.length() && pattern.charAt(i + 1) == '\'') {
+						b.append(ch);
 						++i;
 					} else {
 						inQuote = !inQuote;

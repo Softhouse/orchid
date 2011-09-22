@@ -22,6 +22,7 @@ import static se.softhouse.garden.orchid.commons.text.OrchidMessage.arg;
 import static se.softhouse.garden.orchid.commons.text.OrchidMessage.args;
 import static se.softhouse.garden.orchid.commons.text.OrchidMessage.func;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Locale;
 
@@ -67,6 +68,17 @@ public class TestOrchidMessageFormat {
 		Assert.assertEquals("Test message {x:id}", OrchidMessageFormat.format("Test message {x:id}", arg("id", 1)));
 		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", args().func("test", new TestFunction())));
 		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", func("test", new TestFunction())));
+	}
+
+	@Test
+	public void testEscapedMessage() throws IOException {
+		Assert.assertEquals("L'importo da {min} {currency} e {max} {currency}.",
+		        OrchidMessageFormat.format("L'''importo da {min} {currency} e {max} {currency}.", arg("id", 1)));
+	}
+
+	@Test
+	public void testEmptyMessage() throws IOException {
+		Assert.assertEquals("", OrchidMessageFormat.format("", arg("id", 1)));
 	}
 
 	public static enum TestMessages implements OrchidMessageCode {

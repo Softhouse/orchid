@@ -277,4 +277,5 @@ public class TestOrchidDirectoryMessageLoader {
 		Assert.assertEquals("This is line 1", dml.getMessage("line.1").format(OrchidMessage.arg("type", 1)));
 		Assert.assertEquals("This is the title", dml.getMessage("title").format(OrchidMessage.arg("type", 1)));
 	}
+
 }
