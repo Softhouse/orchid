@@ -9,7 +9,7 @@
 	<groupId>se.softhouse.garden</groupId>
 	<artifactId>orchid-spring</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.4-SNAPSHOT</version>
 	<name>Softhouse Garden Orchid Spring</name>
 	<description>Common utilites for WCM development in Spring MVC</description>
 	<url>https://github.com/Softhouse/orchid</url>
