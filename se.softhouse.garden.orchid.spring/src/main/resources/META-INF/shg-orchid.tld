@@ -25,6 +25,12 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<description>The default message to use when the code (key) is undefined.</description>
+			<name>default</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<description>The string to use when binding the result to the page,
 			request, session or application scope. If not specified, the result
 			gets outputted to the writer (i.e. typically directly to the JSP).</description>

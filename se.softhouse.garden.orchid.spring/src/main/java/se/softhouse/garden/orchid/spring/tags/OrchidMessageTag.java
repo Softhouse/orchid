@@ -43,6 +43,7 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 
 	private static final String LINK_FUNC = OrchidMessageFormatFunction.ORCHID_FUNC + "link";
 	private String code;
+	private String defaultMessage;
 	private OrchidMessageArguments arguments;
 	private String var;
 	private String scope = TagUtils.SCOPE_PAGE;
@@ -81,6 +82,13 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 	 */
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	/**
+	 * Set the default message if code is undefined for this tag.
+	 */
+	public void setDefault(String defaultMessage) {
+		this.defaultMessage = defaultMessage;
 	}
 
 	/**
@@ -164,18 +172,22 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 			throw new JspTagException("No corresponding MessageSource found");
 		}
 
-		String resolvedCode = ExpressionEvaluationUtils.evaluateString("code", this.code, this.pageContext);
+		try {
+			String resolvedCode = ExpressionEvaluationUtils.evaluateString("code", this.code, this.pageContext);
 
-		if (resolvedCode != null) {
-			HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
-			HttpServletResponse response = (HttpServletResponse) this.pageContext.getResponse();
-			this.arguments.arg(LINK_FUNC, new OrchidMessageFormatLinkFunction(request, response));
-			// We have a code or default text that we need to resolve.
-			Object[] argumentsArray = new Object[] { this.arguments };
-			return messageSource.getMessage(resolvedCode, argumentsArray, getRequestContext().getLocale());
+			if (resolvedCode != null) {
+				HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
+				HttpServletResponse response = (HttpServletResponse) this.pageContext.getResponse();
+				this.arguments.arg(LINK_FUNC, new OrchidMessageFormatLinkFunction(request, response));
+				// We have a code or default text that we need to resolve.
+				Object[] argumentsArray = new Object[] { this.arguments };
+				return messageSource.getMessage(resolvedCode, argumentsArray, getRequestContext().getLocale());
+			}
+
+			// All we have is a specified literal text.
+			return this.code;
+		} catch (Throwable e) {
+			return this.defaultMessage;
 		}
-
-		// All we have is a specified literal text.
-		return this.code;
 	}
 }
