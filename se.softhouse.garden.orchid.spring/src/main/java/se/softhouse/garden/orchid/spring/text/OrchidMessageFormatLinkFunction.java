@@ -36,6 +36,8 @@ import se.softhouse.garden.orchid.spring.utils.LinkUtil;
  */
 public class OrchidMessageFormatLinkFunction implements OrchidMessageFormatFunction {
 
+	public static final String LINK_FUNC = OrchidMessageFormatFunction.ORCHID_FUNC + "link";
+
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
 

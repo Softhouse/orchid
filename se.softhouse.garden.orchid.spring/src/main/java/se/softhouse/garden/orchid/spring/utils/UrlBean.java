@@ -28,7 +28,16 @@ import org.springframework.stereotype.Component;
 
 /**
  * This is an alternative implementation to the <spring:url> tag which can be
- * accessed as follows ${url['/a/b/c']}
+ * accessed as follows ${url['/a/b/c']} <br>
+ * <br>
+ * Note that this bean requires that you have defined the following two beans in
+ * applicationContext.xml<br>
+ * <code>
+ * 	<bean id="httpServletResponse" class="se.softhouse.garden.orchid.spring.context.HttpServletResponseFactoryBean" scope="request">
+ * 		<aop:scoped-proxy/>
+ * 	</bean>
+ * 	<bean id="responseInScopeFilter" class="se.softhouse.garden.orchid.spring.context.ResponseInScopeFilter" />
+ * </code>
  * 
  * @author Mikael Svahn
  * 
@@ -38,10 +47,10 @@ import org.springframework.stereotype.Component;
 public class UrlBean extends AbstractStringMapBean {
 
 	@Autowired
-	HttpServletRequest request;
+	protected HttpServletRequest request;
 
 	@Autowired
-	HttpServletResponse response;
+	protected HttpServletResponse response;
 
 	@Override
 	public StringMap get(Object link) {
