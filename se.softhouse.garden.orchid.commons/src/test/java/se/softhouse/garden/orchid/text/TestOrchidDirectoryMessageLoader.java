@@ -52,6 +52,7 @@ public class TestOrchidDirectoryMessageLoader {
 		Assert.assertEquals("ense", dml.getMessage("bundle1.msg.2", new Locale("en", "SE")));
 		Assert.assertEquals("se", dml.getMessage("bundle1.msg.2", new Locale("de", "SE")));
 		Assert.assertEquals("se", dml.getMessage(new OrchidDefaultMessageCode("bundle1.msg.2"), new Locale("de", "SE")));
+		Assert.assertEquals("embedded,local,msg,msg0,msg1,msg2,n,parent", dml.getMessage("test"));
 	}
 
 	@Test
@@ -69,6 +70,7 @@ public class TestOrchidDirectoryMessageLoader {
 		Assert.assertEquals("ense", dml.getMessage("bundle1.msg.2", new Locale("en", "SE")));
 		Assert.assertEquals("se", dml.getMessage("bundle1.msg.2", new Locale("de", "SE")));
 		Assert.assertEquals("se", dml.getMessage(new OrchidDefaultMessageCode("bundle1.msg.2"), new Locale("de", "SE")));
+		Assert.assertEquals("embedded,local,msg,msg0,msg1,msg2,n,parent", dml.getMessage("test"));
 	}
 
 	@Test
