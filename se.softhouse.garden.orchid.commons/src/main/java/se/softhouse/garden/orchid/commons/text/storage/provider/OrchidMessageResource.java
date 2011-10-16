@@ -96,7 +96,9 @@ public abstract class OrchidMessageResource {
 		if (code != null) {
 			String[] codes = code.split(delim);
 			for (String c : codes) {
-				pkg.add(c);
+				if (c.length() > 0) {
+					pkg.add(c);
+				}
 			}
 		}
 		return pkg;
