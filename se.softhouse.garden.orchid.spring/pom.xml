@@ -67,11 +67,6 @@
 	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>org.pegdown</groupId>
-			<artifactId>pegdown</artifactId>
-			<version>1.1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>se.softhouse.garden</groupId>
 			<artifactId>orchid-commons</artifactId>
 			<version>0.4-SNAPSHOT</version>

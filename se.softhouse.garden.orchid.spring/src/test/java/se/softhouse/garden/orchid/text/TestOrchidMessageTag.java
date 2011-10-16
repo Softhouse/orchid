@@ -87,7 +87,7 @@ public class TestOrchidMessageTag {
 		messageTag.setAutoFormat("true");
 		messageTag.doStartTag();
 		messageTag.doEndTag();
-		Assert.assertEquals("<h1>A First Level Header</h1><h2>A Second Level Header</h2>", getContentAsString());
+		Assert.assertEquals("<h1>A First Level Header</h1>\n<h2>A Second Level Header</h2>\n", getContentAsString());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class TestOrchidMessageTag {
 		messageTag.setAutoFormat("true");
 		messageTag.doStartTag();
 		messageTag.doEndTag();
-		Assert.assertEquals("<p>This is a text</p>", getContentAsString());
+		Assert.assertEquals("<p>This is a text</p>\n", getContentAsString());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class TestOrchidMessageTag {
 		messageTag.setAutoFormat("true");
 		messageTag.doStartTag();
 		messageTag.doEndTag();
-		Assert.assertEquals("<p>This is a link <a href=\"http://www.google.com\">http://www.google.com</a></p>", getContentAsString());
+		Assert.assertEquals("<p>This is a link <a href=\"http://www.google.com\">http://www.google.com</a></p>\n", getContentAsString());
 	}
 
 	@Test

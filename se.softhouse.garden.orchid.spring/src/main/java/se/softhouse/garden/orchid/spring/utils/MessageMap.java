@@ -23,13 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 
-import org.pegdown.PegDownProcessor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.spring.text.OrchidMessageFormatLinkFunction;
+
+import com.github.rjeschke.txtmark.Processor;
 
 /**
  * This class makes it possible to get messages from the messageSource using the
@@ -76,8 +77,7 @@ public class MessageMap extends StringMap {
 	protected String formatMessage(String message, String type) {
 		if (type != null) {
 			if (type.equals("md")) {
-				PegDownProcessor processor = new PegDownProcessor();
-				return processor.markdownToHtml(message);
+				return Processor.process(message);
 			}
 		}
 		return message;

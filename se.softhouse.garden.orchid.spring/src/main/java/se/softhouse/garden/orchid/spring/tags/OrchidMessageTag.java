@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.pegdown.PegDownProcessor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.servlet.tags.HtmlEscapingAwareTag;
@@ -37,6 +36,8 @@ import org.springframework.web.util.TagUtils;
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
 import se.softhouse.garden.orchid.spring.text.OrchidMessageFormatLinkFunction;
+
+import com.github.rjeschke.txtmark.Processor;
 
 @SuppressWarnings("serial")
 public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgAware {
@@ -215,8 +216,7 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 				setHtmlEscape("false");
 			} else if (type.equals("md")) {
 				setHtmlEscape("false");
-				PegDownProcessor processor = new PegDownProcessor();
-				return processor.markdownToHtml(message);
+				return Processor.process(message);
 			}
 		}
 		return message;
