@@ -79,6 +79,49 @@ public class TestOrchidMessageTag {
 		Assert.assertEquals("This is a link to /test/images", getContentAsString());
 	}
 
+	@Test
+	public void testMarkdown() throws IOException, JspException {
+		OrchidMessageTag messageTag = new OrchidMessageTag();
+		messageTag.setPageContext(this.pageContext);
+		messageTag.setCode("md.text1");
+		messageTag.setAutoFormat("true");
+		messageTag.doStartTag();
+		messageTag.doEndTag();
+		Assert.assertEquals("<h1>A First Level Header</h1><h2>A Second Level Header</h2>", getContentAsString());
+	}
+
+	@Test
+	public void testMarkdownProperty() throws IOException, JspException {
+		OrchidMessageTag messageTag = new OrchidMessageTag();
+		messageTag.setPageContext(this.pageContext);
+		messageTag.setCode("md.text3");
+		messageTag.setAutoFormat("true");
+		messageTag.doStartTag();
+		messageTag.doEndTag();
+		Assert.assertEquals("<p>This is a text</p>", getContentAsString());
+	}
+
+	@Test
+	public void testMarkdownLink() throws IOException, JspException {
+		OrchidMessageTag messageTag = new OrchidMessageTag();
+		messageTag.setPageContext(this.pageContext);
+		messageTag.setCode("md.text2");
+		messageTag.setAutoFormat("true");
+		messageTag.doStartTag();
+		messageTag.doEndTag();
+		Assert.assertEquals("<p>This is a link <a href=\"http://www.google.com\">http://www.google.com</a></p>", getContentAsString());
+	}
+
+	@Test
+	public void testNoMarkdownLink() throws IOException, JspException {
+		OrchidMessageTag messageTag = new OrchidMessageTag();
+		messageTag.setPageContext(this.pageContext);
+		messageTag.setCode("md.text2");
+		messageTag.doStartTag();
+		messageTag.doEndTag();
+		Assert.assertEquals("This is a link <http://www.google.com>", getContentAsString());
+	}
+
 	private String getContentAsString() throws UnsupportedEncodingException {
 		return ((MockHttpServletResponse) this.pageContext.getResponse()).getContentAsString();
 	}

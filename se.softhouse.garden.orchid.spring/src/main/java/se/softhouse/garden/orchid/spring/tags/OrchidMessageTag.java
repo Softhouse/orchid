@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.pegdown.PegDownProcessor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.servlet.tags.HtmlEscapingAwareTag;
@@ -46,6 +47,7 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 	private String var;
 	private String scope = TagUtils.SCOPE_PAGE;
 	private boolean javaScriptEscape = false;
+	private boolean autoFormat;
 
 	@Override
 	protected int doStartTagInternal() throws Exception {
@@ -87,6 +89,14 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 	 */
 	public void setDefault(String defaultMessage) {
 		this.defaultMessage = defaultMessage;
+	}
+
+	/**
+	 * Set auto format for this tag, as boolean value. This will enable html and
+	 * md formatting
+	 */
+	public void setAutoFormat(String autoFormat) throws JspException {
+		this.autoFormat = ExpressionEvaluationUtils.evaluateBoolean("autoFormat", autoFormat, this.pageContext);
 	}
 
 	/**
@@ -179,7 +189,9 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 				this.arguments.arg(OrchidMessageFormatLinkFunction.LINK_FUNC, new OrchidMessageFormatLinkFunction(request, response));
 				// We have a code or default text that we need to resolve.
 				Object[] argumentsArray = new Object[] { this.arguments };
-				return messageSource.getMessage(resolvedCode, argumentsArray, getRequestContext().getLocale());
+				String message = messageSource.getMessage(resolvedCode, argumentsArray, getRequestContext().getLocale());
+				String type = messageSource.getMessage("+.type." + resolvedCode, argumentsArray, null, getRequestContext().getLocale());
+				return formatMessage(message, type);
 			}
 
 			// All we have is a specified literal text.
@@ -187,5 +199,26 @@ public class OrchidMessageTag extends HtmlEscapingAwareTag implements OrchidArgA
 		} catch (Throwable e) {
 			return this.defaultMessage;
 		}
+	}
+
+	/**
+	 * Format the message before it is printed
+	 * 
+	 * @param message
+	 *            The message to format
+	 * @return The formatted message
+	 * @throws JspException
+	 */
+	protected String formatMessage(String message, String type) throws JspException {
+		if (this.autoFormat && type != null) {
+			if (type.equals("html")) {
+				setHtmlEscape("false");
+			} else if (type.equals("md")) {
+				setHtmlEscape("false");
+				PegDownProcessor processor = new PegDownProcessor();
+				return processor.markdownToHtml(message);
+			}
+		}
+		return message;
 	}
 }
