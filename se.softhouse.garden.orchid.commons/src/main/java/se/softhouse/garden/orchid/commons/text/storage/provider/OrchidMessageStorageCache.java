@@ -149,8 +149,8 @@ public class OrchidMessageStorageCache<T> {
 	 * 
 	 * @return The message
 	 */
-	protected T addToCache(List<String> pkgs, String locale, T message) {
-		String c = formatCode(pkgs);
+	protected T addToCache(List<String> prePkgs, List<String> pkgs, String locale, T message) {
+		String c = formatCode(prePkgs, pkgs);
 		if (c != null) {
 			Map<String, T> map = this.cachedMessages.get(locale);
 			if (map == null) {
@@ -219,21 +219,27 @@ public class OrchidMessageStorageCache<T> {
 	 * 
 	 * @param pkgs
 	 *            The list of packages
+	 * @param pkgs2
 	 * 
 	 * @return A dot separated string of the list
 	 */
-	protected String formatCode(List<String> pkgs) {
+	protected String formatCode(List<String> prePkgs, List<String> pkgs) {
 		StringBuilder b = new StringBuilder();
-		for (int i = this.packageStartLevel; i < pkgs.size(); i++) {
+		formatCode(0, prePkgs, b);
+		formatCode(this.packageStartLevel, pkgs, b);
+		if (b.length() > 0) {
+			return b.toString();
+		}
+		return null;
+	}
+
+	private void formatCode(int start, List<String> pkgs, StringBuilder b) {
+		for (int i = start; i < pkgs.size(); i++) {
 			if (b.length() > 0) {
 				b.append('.');
 			}
 			b.append(pkgs.get(i));
 		}
-		if (b.length() > 0) {
-			return b.toString();
-		}
-		return null;
 	}
 
 	/**

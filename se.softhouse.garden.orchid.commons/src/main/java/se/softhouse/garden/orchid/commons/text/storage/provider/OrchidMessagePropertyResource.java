@@ -64,7 +64,17 @@ public class OrchidMessagePropertyResource extends OrchidMessageResource {
 		Set<Entry<Object, Object>> entrySet = props.entrySet();
 		List<String> pkgs2 = createPackageList(pkgs, this.resourceInfo.getCode());
 		for (Entry<Object, Object> entry : entrySet) {
-			addToCache(cache, pkgs2, messageFactory, (String) entry.getKey(), (String) entry.getValue());
+			String key = (String) entry.getKey();
+			String ext = null;
+			int idx = key.indexOf('+');
+			if (idx > -1) {
+				ext = key.substring(idx + 1);
+				key = key.substring(0, idx);
+			}
+			addToCache(cache, EMPTY_LIST, pkgs2, messageFactory, key, (String) entry.getValue());
+			if (ext != null) {
+				addToCache(cache, TYPE_PKGS_ROOT, pkgs2, messageFactory, key, ext);
+			}
 		}
 	}
 

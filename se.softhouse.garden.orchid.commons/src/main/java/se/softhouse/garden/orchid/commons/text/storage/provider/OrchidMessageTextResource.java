@@ -55,7 +55,8 @@ public class OrchidMessageTextResource extends OrchidMessageResource {
 	@Override
 	public <T> void loadMessages(OrchidMessageStorageCache<T> cache, List<String> pkgs, MessageFactory<T> messageFactory) throws IOException {
 		String out = readFromStream(this.inputStream, this.charsetName);
-		addToCache(cache, pkgs, messageFactory, this.resourceInfo.getCode(), out);
+		addToCache(cache, EMPTY_LIST, pkgs, messageFactory, this.resourceInfo.getCode(), out);
+		addToCache(cache, TYPE_PKGS_ROOT, pkgs, messageFactory, this.resourceInfo.getCode(), this.resourceInfo.getExt());
 	}
 
 	public static String readFromStream(InputStream inputStream, String charsetName) throws UnsupportedEncodingException, IOException {

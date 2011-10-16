@@ -20,6 +20,7 @@ package se.softhouse.garden.orchid.commons.text.storage.provider;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCache.MessageFactory;
@@ -32,6 +33,8 @@ import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageSto
  */
 public abstract class OrchidMessageResource {
 
+	protected static final List<String> EMPTY_LIST = new ArrayList<String>();
+	protected static final List<String> TYPE_PKGS_ROOT = new ArrayList<String>(Arrays.asList("+", "type"));
 	protected final OrchidMessageResourceInfo resourceInfo;
 	protected final String charsetName;
 
@@ -115,8 +118,10 @@ public abstract class OrchidMessageResource {
 	 * @param value
 	 *            The value of the message, used to create the message
 	 */
-	protected <T> void addToCache(OrchidMessageStorageCache<T> cache, List<String> pkgs, MessageFactory<T> messageFactory, String code, String value) {
-		cache.addToCache(createPackageList(pkgs, code), this.resourceInfo.getLocaleCode(), messageFactory.createMessage(value, this.resourceInfo.getLocale()));
+	protected <T> void addToCache(OrchidMessageStorageCache<T> cache, List<String> prePkgs, List<String> pkgs, MessageFactory<T> messageFactory, String code,
+	        String value) {
+		cache.addToCache(prePkgs, createPackageList(pkgs, code), this.resourceInfo.getLocaleCode(),
+		        messageFactory.createMessage(value, this.resourceInfo.getLocale()));
 	}
 
 }
