@@ -71,7 +71,11 @@ public class LinkUtil {
 		if (type != UrlType.ABSOLUTE && response != null) {
 			// Add the session identifier if needed
 			// (Do not embed the session identifier in a remote link!)
-			urlStr = response.encodeURL(urlStr);
+			try {
+				urlStr = response.encodeURL(urlStr);
+			} catch (Throwable e) {
+				// Ignore errors
+			}
 		}
 
 		return urlStr;
