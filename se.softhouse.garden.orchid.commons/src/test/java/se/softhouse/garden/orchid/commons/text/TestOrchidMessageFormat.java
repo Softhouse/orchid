@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.text;
+package se.softhouse.garden.orchid.commons.text;
 
 import static se.softhouse.garden.orchid.commons.text.OrchidMessage.arg;
 import static se.softhouse.garden.orchid.commons.text.OrchidMessage.args;

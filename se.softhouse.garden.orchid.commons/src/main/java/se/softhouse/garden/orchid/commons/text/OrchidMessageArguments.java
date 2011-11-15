@@ -111,7 +111,7 @@ public class OrchidMessageArguments {
 	/**
 	 * Adds an argument to this instance.
 	 * 
-	 * @param name
+	 * @param subkey
 	 *            The name of the argument
 	 * @param value
 	 *            The value of the argument
@@ -124,7 +124,7 @@ public class OrchidMessageArguments {
 	/**
 	 * Adds an argument to this instance.
 	 * 
-	 * @param name
+	 * @param subkey
 	 *            The name of the argument
 	 * @param value
 	 *            The value of the argument

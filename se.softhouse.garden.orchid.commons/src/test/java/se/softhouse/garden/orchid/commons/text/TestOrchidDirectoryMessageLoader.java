@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package se.softhouse.garden.orchid.text;
+package se.softhouse.garden.orchid.commons.text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,11 +31,11 @@ import org.junit.Test;
 import se.softhouse.garden.orchid.commons.text.OrchidDefaultMessageCode;
 import se.softhouse.garden.orchid.commons.text.OrchidMessage;
 import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
+import se.softhouse.garden.orchid.commons.text.TestOrchidMessageFormat.TestMessages;
 import se.softhouse.garden.orchid.commons.text.storage.OrchidMessageFormatStorage;
 import se.softhouse.garden.orchid.commons.text.storage.OrchidStringMessageStorage;
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageDirectoryStorageProvider;
 import se.softhouse.garden.orchid.commons.text.storage.provider.OrchidMessageStorageCachedProvider;
-import se.softhouse.garden.orchid.text.TestOrchidMessageFormat.TestMessages;
 
 public class TestOrchidDirectoryMessageLoader {
 
