@@ -28,9 +28,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import se.softhouse.garden.orchid.commons.text.OrchidDefaultMessageCode;
-import se.softhouse.garden.orchid.commons.text.OrchidMessage;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
 import se.softhouse.garden.orchid.commons.text.TestOrchidMessageFormat.TestMessages;
 import se.softhouse.garden.orchid.commons.text.storage.OrchidMessageFormatStorage;
 import se.softhouse.garden.orchid.commons.text.storage.OrchidStringMessageStorage;
@@ -180,6 +177,20 @@ public class TestOrchidDirectoryMessageLoader {
 		dml.start();
 		Assert.assertEquals("The base text and the embedded: Default Hi", dml.getMessage("func.base").format(OrchidMessage.arg("msg", "Hi")));
 		Assert.assertEquals("The base text and the embedded: SV Hi", dml.getMessage("func.base", new Locale("sv", "SE")).format(OrchidMessage.arg("msg", "Hi")));
+	}
+
+	@Test
+	public void testEmbeddedRegexpMessages() throws IOException {
+		Locale.setDefault(Locale.US);
+		OrchidMessageStorageCachedProvider<OrchidMessageFormat> provider = new OrchidMessageDirectoryStorageProvider<OrchidMessageFormat>("file:texttest");
+		OrchidMessageFormatStorage dml = new OrchidMessageFormatStorage(provider);
+		dml.start();
+		Assert.assertEquals("The base text and the embedded: Default Hi",
+		        dml.getMessage("func.regexp").format(OrchidMessage.arg("msg", "Hi").arg("mode", "Show")));
+		Assert.assertEquals("The base text and the embedded: SV Hi",
+		        dml.getMessage("func.regexp", new Locale("sv", "SE")).format(OrchidMessage.arg("msg", "Hi").arg("mode", "show")));
+		Assert.assertEquals("The base text and the embedded: ", dml.getMessage("func.regexp").format(OrchidMessage.arg("msg", "Hi")));
+		Assert.assertEquals("The base text and the embedded: ", dml.getMessage("func.regexp").format(OrchidMessage.arg("msg", "Hi").arg("mode", "hide")));
 	}
 
 	@Test

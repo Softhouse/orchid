@@ -29,13 +29,6 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
-import se.softhouse.garden.orchid.commons.text.OrchidMessageArgumentCode;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageArguments;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageCode;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormat;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunction;
-import se.softhouse.garden.orchid.commons.text.OrchidMessageFormatFunctionExecutor;
-
 public class TestOrchidMessageFormat {
 
 	@Test
@@ -68,6 +61,8 @@ public class TestOrchidMessageFormat {
 		Assert.assertEquals("Test message {x:id}", OrchidMessageFormat.format("Test message {x:id}", arg("id", 1)));
 		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", args().func("test", new TestFunction())));
 		Assert.assertEquals("Test message test-id", OrchidMessageFormat.format("Test message {test:id}", func("test", new TestFunction())));
+		Assert.assertEquals("Test message {id}", OrchidMessageFormat.format("Test message {m:id:name:[Kk]alle}", arg("name", "Kalle")));
+		Assert.assertEquals("Test message ", OrchidMessageFormat.format("Test message {m:id:name:[Kk]alle}", arg("name", "Nisse")));
 	}
 
 	@Test

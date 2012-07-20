@@ -20,7 +20,6 @@ public class OrchidLocalizedMesageSource {
 	MessageSource messageSource;
 
 	public OrchidLocalizedMesageSource() {
-		System.out.println("Test");
 	}
 
 	public void setLocale(Locale locale) {

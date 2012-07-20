@@ -50,6 +50,7 @@ public class TestOrchidMessageTag {
 		messageTag.setCode("msg1");
 		messageTag.doStartTag();
 		OrchidArgTag argTag = new OrchidArgTag();
+		argTag.setPageContext(this.pageContext);
 		argTag.setParent(messageTag);
 		argTag.setName("id");
 		argTag.setValue("1");

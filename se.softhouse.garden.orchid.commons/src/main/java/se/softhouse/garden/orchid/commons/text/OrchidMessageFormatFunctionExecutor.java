@@ -19,6 +19,8 @@
 package se.softhouse.garden.orchid.commons.text;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The default function executor that will be created when a function is found
@@ -97,13 +99,30 @@ public class OrchidMessageFormatFunctionExecutor {
 	 */
 	public Object execute(OrchidMessageArguments args, Locale locale) {
 		if ("m".equals(this.function)) {
-			if (this.getOrchidMessageFormatLookup() != null) {
-				OrchidMessageFormat message = this.getOrchidMessageFormatLookup().getMessage(this.value, locale);
-				if (message != null) {
-					return message.format(args);
+			String key = this.value;
+			Matcher matcher = Pattern.compile("([^:]*):([^:]*):(.*)").matcher(this.value);
+			if (matcher.matches()) {
+				key = null;
+				String k = matcher.group(1);
+				String variable = matcher.group(2);
+				String regex = matcher.group(3);
+				Object o = args.getArgs().get(variable);
+				if (o != null) {
+					if (Pattern.matches(regex, o.toString())) {
+						key = k;
+					}
 				}
 			}
-			return "{" + this.value + "}";
+			if (key != null) {
+				if (this.getOrchidMessageFormatLookup() != null) {
+					OrchidMessageFormat message = this.getOrchidMessageFormatLookup().getMessage(key, locale);
+					if (message != null) {
+						return message.format(args);
+					}
+				}
+				return "{" + key + "}";
+			}
+			return "";
 		}
 		OrchidMessageFormatFunction func = (OrchidMessageFormatFunction) args.getArgs().get(OrchidMessageFormatFunction.ORCHID_FUNC + this.function);
 		if (func != null) {

@@ -95,6 +95,21 @@ public class OrchidMessageSourceBuilder implements MessageSourceResolvable {
 	}
 
 	/**
+	 * Adds an argument to this builder
+	 * 
+	 * @param code
+	 *            The code of the argument
+	 * @param value
+	 *            The value of the argument
+	 * 
+	 * @return This builder
+	 */
+	public OrchidMessageSourceBuilder arg(String code, Object value) {
+		this.args.arg(code, value);
+		return this;
+	}
+
+	/**
 	 * Return the arguments
 	 */
 	public OrchidMessageArguments getArgs() {
