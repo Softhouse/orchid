@@ -39,6 +39,8 @@ public class TestOrchidMessageSource {
 		OrchidReloadableResourceBundleMessageSource ms = new OrchidReloadableResourceBundleMessageSource();
 		ms.setBasename("test");
 		ms.setUseCodeAsDefaultMessage(true);
+		Assert.assertEquals("x", ms.getMessage(code("x"), Locale.getDefault()));
+		Assert.assertEquals("y", ms.getMessage(code("x", "y"), Locale.getDefault()));
 		Assert.assertEquals("FileTest message", ms.getMessage(code(TestMessages.MSG0), Locale.getDefault()));
 		Assert.assertEquals("FileTest message 1", ms.getMessage(code(TestMessages.MSG1).arg(TestArguments.ID, 1), Locale.getDefault()));
 		Assert.assertEquals("FileTest message 002 with name Micke",

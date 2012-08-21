@@ -55,4 +55,18 @@ public abstract class OrchidMessageSource extends OrchidMessage {
 		return new OrchidMessageSourceBuilder(new OrchidDefaultMessageCode(code));
 	}
 
+	/**
+	 * Creates an instance with the specified code and default value.
+	 * 
+	 * @param code
+	 *            The name of the message specified as a code
+	 * @param defaultValue
+	 *            The default value to use when the property is missing
+	 * 
+	 * @return The created {@link OrchidMessageSourceBuilder}
+	 */
+	public static OrchidMessageSourceBuilder code(String code, String defaultValue) {
+		return new OrchidMessageSourceBuilder(new OrchidDefaultMessageCode(code, defaultValue));
+	}
+
 }

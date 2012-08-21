@@ -167,7 +167,8 @@ public class OrchidMessageSourceBuilder implements MessageSourceResolvable {
 	 */
 	@Override
 	public String getDefaultMessage() {
-		return this.code.getPattern();
+		Object val = this.args.getArgs().get("default");
+		return val == null ? this.code.getPattern() : val.toString();
 	}
 
 }
