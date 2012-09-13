@@ -1,0 +1,20 @@
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+
+dependencies {
+	compile "se.softhouse.garden:orchid-vaadin:${version}"
+}
+
+task(compileWidgetset, type: JavaExec)  {
+	main = 'com.google.gwt.dev.Compiler'
+	classpath sourceSets.main.java.srcDirs
+	classpath sourceSets.main.resources.srcDirs
+	classpath configurations.compile
+	classpath configurations.gwtTools
+	jvmArgs '-Xss1024k'
+	args '-logLevel'
+	args 'INFO'
+	args '-war'
+	args "${projectDir}/src/main/webapp/VAADIN/widgetsets"
+	args findWidgetset("${projectDir}/src/main/resources/")
+}

@@ -1,0 +1,76 @@
+apply plugin: 'maven'
+
+jar {
+	baseName = "orchid-vaadin"
+    from sourceSets.main.java.srcDirs 
+    manifest {
+        attributes 'Vaadin-Widgetsets': 'se.softhouse.garden.orchid.vaadin.OrchidWidgetset', 'Vaadin-Package-Version': 1
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.artifactId = 'orchid-vaadin'
+    }
+}
+
+task jdoc(type: Javadoc) {
+	source = sourceSets.main.java.srcDirs 
+}
+
+task javadocJar(type: Jar, dependsOn: jdoc) {
+	baseName = "orchid-vaadin"
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+ 
+task sourcesJar(type: Jar) {
+	baseName = "orchid-vaadin"
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+ 
+            pom.project {
+               name 'orchid-vaadin'
+               packaging 'jar'
+               description 'Orchid-vaadin contains widgets to be used with Vaadin'
+               url 'https://github.com/Softhouse/orchid'
+ 
+               scm {
+                   url 'scm:git@github.com:Softhouse/orchid.git'
+                   connection 'scm:git@github.com:Softhouse/orchid.git'
+                   developerConnection 'scm:git@github.com:Softhouse/orchid.git'
+               }
+ 
+               licenses {
+                   license {
+                       name 'Softhouse Open Source License'
+                       url 'https://github.com/Softhouse/orchid/blob/master/LICENSE'
+                       distribution 'repo'
+                   }
+               }
+ 
+               developers {
+                   developer {
+                       id 'svahn'
+                       name 'Mikael Svahn'
+                       email 'mikael.k.svahn@gmail.com'
+                   }
+               }
+           }
+        }
+    }
+}
