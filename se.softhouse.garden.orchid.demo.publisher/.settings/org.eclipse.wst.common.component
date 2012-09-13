@@ -4,6 +4,12 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="orchid-spring-0.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/se.softhouse.garden.orchid.spring/se.softhouse.garden.orchid.spring">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="orchid-commons-0.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/se.softhouse.garden.orchid.commons/se.softhouse.garden.orchid.commons">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/se.softhouse.garden/orchid/demo/publisher/target/classes"/>
         <property name="context-root" value="publisher"/>
     </wb-module>
