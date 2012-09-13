@@ -27,20 +27,27 @@ package se.softhouse.garden.orchid.commons.text;
  */
 public class OrchidDefaultMessageCode implements OrchidMessageCode {
 
-	private final String code;
+	private final String realName;
+	private final String pattern;
 
 	public OrchidDefaultMessageCode(String code) {
-		this.code = code;
+		this.realName = code;
+		this.pattern = code;
+	}
+
+	public OrchidDefaultMessageCode(String realName, String pattern) {
+		this.realName = realName;
+		this.pattern = pattern;
 	}
 
 	@Override
 	public String getRealName() {
-		return this.code;
+		return this.realName;
 	}
 
 	@Override
 	public String getPattern() {
-		return this.code;
+		return this.pattern;
 	}
 
 }
