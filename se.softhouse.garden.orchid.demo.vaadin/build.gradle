@@ -23,7 +23,7 @@ repositories {
 dependencies {
 	// Vaadin libraries
 	compile 'com.vaadin:vaadin:6.8.2'
-	compile 'se.softhouse.garden:orchid-spring:0.8-SNAPSHOT'
+	compile 'se.softhouse.garden:orchid-spring:0.9-SNAPSHOT'
 	compile 'org.springframework.ws:spring-ws-core:2.0.5.RELEASE'
 	compile 'org.springframework.ws:spring-ws-core:2.0.5.RELEASE'
 }

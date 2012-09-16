@@ -1,5 +1,6 @@
 package se.softhouse.garden.orchid.spring.text;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -11,10 +12,11 @@ import org.springframework.context.MessageSourceResolvable;
 
 import se.softhouse.garden.orchid.commons.text.OrchidMessageCode;
 
-public class OrchidLocalizedMesageSource {
+public class OrchidLocalizedMesageSource implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private Locale locale = Locale.ENGLISH;
-	private final List<OrchidLocalizedMesageListener> listeners = new ArrayList<OrchidLocalizedMesageListener>();
+	transient private final List<OrchidLocalizedMesageListener> listeners = new ArrayList<OrchidLocalizedMesageListener>();
 
 	@Resource
 	MessageSource messageSource;
