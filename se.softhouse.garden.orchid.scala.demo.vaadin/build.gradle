@@ -1,0 +1,39 @@
+apply plugin: 'scala'
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+
+version = '0.1-SNAPSHOT'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Vaadin Orchid Demo', 'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+	mavenRepo(url: 'http://maven.vaadin.com/vaadin-addons')
+	mavenRepo(url: 'https://oss.sonatype.org/content/repositories/snapshots')
+	mavenRepo(url: 'http://maven.springframework.org/release')
+	mavenRepo(url: 'http://maven.springframework.org/milestone')
+	mavenRepo(url: 'http://repository.springsource.com/maven/bundles/release')
+	mavenRepo(url: 'http://repository.springsource.com/maven/bundles/external')
+}
+
+dependencies {
+		// Libraries needed to run the scala tools
+	scalaTools 'org.scala-lang:scala-compiler:2.9.2'
+	scalaTools 'org.scala-lang:scala-library:2.9.2'
+
+	// Libraries needed for scala api
+	compile 'org.scala-lang:scala-library:2.9.2'
+	compile 'org.scalaj:scalaj-collection_2.9.1:1.2'
+
+		// Vaadin libraries
+	compile 'com.vaadin:vaadin:6.8.2'
+	compile 'org.vaadin.addons:scaladin:2.0.0'
+	compile 'se.softhouse.garden:orchid-scala-spring:0.1-SNAPSHOT'
+	compile 'org.springframework.ws:spring-ws-core:2.0.5.RELEASE'
+
+}

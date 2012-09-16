@@ -1,0 +1,106 @@
+apply plugin: 'scala'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+group = 'se.softhouse.garden'
+version = '0.1-SNAPSHOT'
+
+project.group = "${group}"
+project.version = "${version}"
+
+sourceCompatibility = 1.5
+
+repositories {
+	mavenLocal()
+   	mavenCentral()
+	mavenRepo(url: 'https://oss.sonatype.org/content/repositories/snapshots')
+}
+
+dependencies {
+		// Libraries needed to run the scala tools
+	scalaTools 'org.scala-lang:scala-compiler:2.9.2'
+	scalaTools 'org.scala-lang:scala-library:2.9.2'
+
+	// Libraries needed for scala api
+	compile 'org.scala-lang:scala-library:2.9.2'
+	compile 'org.scalaj:scalaj-collection_2.9.1:1.2'
+
+	compile 'se.softhouse.garden:orchid-spring:0.9-SNAPSHOT'
+
+	// OrientDB
+	compile 'com.orientechnologies:orient-commons:1.1.0'
+	compile 'com.orientechnologies:orientdb-core:1.1.0'
+	compile 'com.orientechnologies:orientdb-client:1.1.0'
+	compile 'javax.jdo:jdo-api:3.0.1'
+}
+
+jar {
+	baseName = "orchid-scala-spring"
+}
+
+install {
+	repositories.mavenInstaller {
+		pom.artifactId = 'orchid-scala-spring'
+	}
+}
+
+task jdoc(type: Javadoc) {
+	source = sourceSets.main.java.srcDirs
+}
+
+task javadocJar(type: Jar, dependsOn: jdoc) {
+	baseName = "orchid-scala-spring"
+	classifier = 'javadoc'
+	from 'build/docs/javadoc'
+}
+ 
+task sourcesJar(type: Jar) {
+	baseName = "orchid-scala-spring"
+	from sourceSets.main.java.srcDirs
+	classifier = 'sources'
+}
+
+artifacts {
+	archives jar
+	archives javadocJar
+	archives sourcesJar
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			repository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+			  authentication(userName: sonatypeUsername, password: sonatypePassword)
+			}
+ 
+			pom.project {
+			   name 'orchid-scala-spring'
+			   packaging 'jar'
+			   description 'Contains utilities for spring when used in scala'
+			   url 'https://github.com/Softhouse/orchid'
+ 
+			   scm {
+				   url 'scm:git@github.com:Softhouse/orchid.git'
+				   connection 'scm:git@github.com:Softhouse/orchid.git'
+				   developerConnection 'scm:git@github.com:Softhouse/orchid.git'
+			   }
+ 
+			   licenses {
+				   license {
+					   name 'Softhouse Open Source License'
+					   url 'https://github.com/Softhouse/orchid/blob/master/LICENSE'
+					   distribution 'repo'
+				   }
+			   }
+ 
+			   developers {
+				   developer {
+					   id 'svahn'
+					   name 'Mikael Svahn'
+					   email 'mikael.k.svahn@gmail.com'
+				   }
+			   }
+		   }
+		}
+	}
+}
