@@ -7,7 +7,7 @@ import com.vaadin.terminal.gwt.client.ui.VTextField;
 public class VOrchidInputField extends VTextField {
 
 	public VOrchidInputField() {
-		getElement().setAttribute("type", "number");
+		getElement().setAttribute("type", "text");
 	}
 
 	/**
@@ -15,14 +15,7 @@ public class VOrchidInputField extends VTextField {
 	 */
 	@Override
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-		// This call should be made first.
-		// It handles sizes, captions, tooltips, etc. automatically.
-		if (client.updateComponent(this, uidl, true)) {
-			// If client.updateComponent returns true there has been no changes
-			// and we
-			// do not need to update anything.
-			return;
-		}
+		super.updateFromUIDL(uidl, client);
 
 		// Process attributes/variables from the server
 		// The attribute names are the same as we used in

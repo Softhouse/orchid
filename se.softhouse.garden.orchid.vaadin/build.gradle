@@ -6,7 +6,7 @@ subprojects {
     apply plugin: 'eclipse'
 
 	group = 'se.softhouse.garden'
-	version = '0.1-SNAPSHOT'
+	version = '0.1.3-SNAPSHOT'
 
 	project.group = "${group}"
 	project.version = "${version}"
@@ -50,7 +50,7 @@ task allClean {
 }
 
 task allUploadArchives {
-	dependsOn('allBuild', 'addon:uploadArchives')
+	dependsOn('addon:uploadArchives')
 }
 
 def findWidgetset(String path) {
